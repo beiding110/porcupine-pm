@@ -43,11 +43,13 @@
         </card>
 
         <div class="body">
-            <task-item
-                v-for="(item, index) in data.list"
-                :key="index"
-                :data="item"
-            ></task-item>
+            <draggable v-model="data.list" group="tasks">
+                <task-item
+                    v-for="(item, index) in data.list"
+                    :key="index"
+                    :data="item"
+                ></task-item>
+            </draggable>
         </div>
 
         <div class="foot">
@@ -63,6 +65,7 @@ import DropdownMenu from '@components-sys/dropdown-menu';
 import Card from './card';
 import TaskItem from './task-item';
 import TaskAdd from './task-add';
+import Draggable from 'vuedraggable';
 
 export default {
     components: {
@@ -70,6 +73,7 @@ export default {
         Card,
         TaskItem,
         TaskAdd,
+        Draggable,
     },
     props: {
         data: {
@@ -82,7 +86,7 @@ export default {
                 done: 0,
                 list: [
                     {
-                        title: '任务',
+                        title: '任务1',
                         state: 0,
                         starttime: '2022/4/28',
                         endtime: '2022/4/29',
@@ -91,9 +95,35 @@ export default {
                         people: [
                             {
                                 name: 'yzh'
-                            }
+                            },
                         ]
-                    }
+                    },
+                    {
+                        title: '任务2',
+                        state: 0,
+                        starttime: '2022/4/28',
+                        endtime: '2022/4/29',
+                        duration: 8,
+                        level: 'h',
+                        people: [
+                            {
+                                name: 'yzh'
+                            },
+                        ]
+                    },
+                    {
+                        title: '任务3',
+                        state: 0,
+                        starttime: '2022/4/28',
+                        endtime: '2022/4/29',
+                        duration: 8,
+                        level: 'h',
+                        people: [
+                            {
+                                name: 'yzh'
+                            },
+                        ]
+                    },
                 ],
             }),
         },
@@ -179,6 +209,7 @@ export default {
         display: inline-block;
         width: 280px;
         height: 100%;
+        vertical-align: top;
 
         & + .group-item{
             margin-left: 20px;
