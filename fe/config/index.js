@@ -3,11 +3,11 @@ exports.vue = {
         port: '8080',
         open: true,
         proxy: {
-            '/': {
-                target: 'http://www.hgchzx.com',
+            '/pm': {
+                target: 'http://127.0.0.1:3000',
                 changeOrigin: true,
                 pathRewrite: {
-                    '^/': '/'
+                    '^/pm': '/'
                 }
             }
         },

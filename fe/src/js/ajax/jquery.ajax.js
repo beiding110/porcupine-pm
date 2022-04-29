@@ -100,9 +100,10 @@ function AjaxRequest(settings) {
     c_data = !!settings.fztype ? JSON.stringify(c_data) : c_data;
     var contentType = !!settings.fztype ? 'application/json;charset=UTF-8' : 'application/x-www-form-urlencoded;charset=UTF-8';
     var callback = settings.callback || function () {}
+    var url = /\?/.test(settings.url) ? settings.url + '&random=' + getTimeStrmp() : settings.url + '?random=' + getTimeStrmp();
 
     $.ajax({
-        url: /\?/.test(settings.url) ? settings.url + '&random=' + getTimeStrmp() : settings.url + '?random=' + getTimeStrmp(),
+        url: '/pm' + url,
         type: settings.type || 'get',
         data: c_data,
         contentType: contentType,
