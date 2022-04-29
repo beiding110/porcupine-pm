@@ -55,6 +55,8 @@
 <script>
 import DIALOG_LIST_MIXIN from '@mixins/dialog-list-page';
 
+import CONFIG_STATE from '../config/state';
+
 import Card from './card';
 import State from './state';
 import PeopleEditor from '../../project/components/people-editor';
@@ -108,32 +110,19 @@ export default {
                     },
                     {
                         label: '修改状态',
-                        children: [
-                            { 
-                                label: "待办",
+                        children: Object.keys(CONFIG_STATE).reduce((arr, key) => {
+                            var item = CONFIG_STATE[key];
+
+                            arr.push({
+                                label: item.text,
+                                icon: item.icon,
                                 onClick: () => {
-                                    this.shiftState(0);
+                                    this.shiftState(item);
                                 },
-                            }, 
-                            { 
-                                label: "未开始",
-                                onClick: () => {
-                                    this.shiftState(1);
-                                },
-                            },
-                            { 
-                                label: "进行中",
-                                onClick: () => {
-                                    this.shiftState(2);
-                                },
-                            },
-                            { 
-                                label: "已完成",
-                                onClick: () => {
-                                    this.shiftState(3);
-                                },
-                            },
-                        ],
+                            });
+
+                            return arr;
+                        }, []),
                         divided: true,
                     },
                     {
