@@ -30,7 +30,7 @@ export default {
     },
     actions: {
         login({commit, getters, state, dispatch}, form) {
-            Vue.prototype.$post(`/pms/login`, form, function (data, res) {
+            Vue.prototype.$post(`/user/login`, form, function (data, res) {
                 store.commit('setUser', data.user);
 
                 store.commit('setSystem', {

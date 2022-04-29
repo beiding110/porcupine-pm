@@ -49,7 +49,7 @@ router.post('/login', function (req, res, next) {
     
         data.pwd = '';
 
-        res.cookie('ppm_userid', data._id, {
+        res.cookie('ppm_userid', data.id, {
             maxAge: 1000 * 60 * 60 * 24,
         });
 
