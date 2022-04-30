@@ -1,6 +1,6 @@
 <template>
-    <el-card>
-        <my-search v-model="pgData" @search="searchHandler">
+    <el-card class="paoject-main">
+        <my-search v-model="pgData" @search="queryData">
             <template slot="btn">
                 <my-btn type="new" @click="addHandler">新增</my-btn>
             </template>
@@ -8,8 +8,9 @@
         
         <div class="list">
             <card-pro 
-                v-for="(item, index) in tableData"
-                :key="index"
+                v-for="item in tableData"
+                :key="item._id"
+                :data="item"
                 @edit="editHandler(item)"
                 @reload="queryData"
             ></card-pro>
@@ -22,6 +23,7 @@
         >
             <form-page
                 v-if="dialogVisible"
+                :data="form"
                 @cancle="dialogClose"
             ></form-page>
         </my-dialog>
@@ -45,23 +47,22 @@ export default {
     data () {
         return {
             tableData: [],
-			pgData:{
-				proname:'' ,//项目名称
-				xmlx:'' ,//项目类型
-				shstate: '',
-				onlyshowhistory: false,
-			},
-
+            pgData:{},
+            
             loadingController: false
-        }
+        };
     },
     computed: {
 
     },
     methods: {
         queryData() {
-            // TODO: 获取项目列表
-            this.tableData = [1,1,1,1,1,1,1,1,1,1,1]
+            this.$get('/project/list', this.pgData, data => {
+                this.tableData = data;
+            });
+        },
+        reloadHandler() {
+            this.queryData();
         },
     },
     mounted: function() {
@@ -72,6 +73,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+    .paoject-main{
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+    }
+
     .list{
         display: flex;
         flex-wrap: wrap;

@@ -116,6 +116,12 @@ $topNavWithTagNavHeight: 80px;
         transition: all .3s;
         background-color: $primaryColor1;
 
+        .view-box{
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
         &.collapse {
             left: $colLeftWidth;
         }

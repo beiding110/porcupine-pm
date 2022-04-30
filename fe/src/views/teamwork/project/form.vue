@@ -3,8 +3,9 @@
     ref="form"
     v-model="form"
     table
-    :submit-url="`${getGetters('twUrl')}/xmgl/project/add`"
-    :detail-url="`${getGetters('twUrl')}/xmgl/project/detail`"
+    send-str
+    submit-url="/project/form"
+    detail-url="/project/detail"
     @cancle="cancleHandler"
     :detail-extra="detailExtra"
     >
@@ -32,10 +33,10 @@
         <el-form-item 
         class="table-full-row"
         label="人员" 
-        prop="people" 
+        prop="member" 
         :rules="newRule('人员' ,'required')"
         >
-            <people-editor v-model="form.people"></people-editor>
+            <people-editor v-model="form.member"></people-editor>
         </el-form-item>
     </my-form>
 </template>
@@ -52,19 +53,22 @@ export default {
         PeopleEditor,
     },
     props: {
-        
+        data: {
+            type: Object,
+            default: () => ({}),
+        },
     },
     data: () => ({
         form: {
             proname: '',
             detail: '',
-            people: [],
+            member: [],
         }
     }),
     computed: {
         detailExtra() {
             return {
-                rowguid: this.getQuery('rowguid')
+                procode: this.data._id
             };
         }
     },

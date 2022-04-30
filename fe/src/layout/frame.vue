@@ -20,7 +20,9 @@
         </div>
         
         <div class="view">
-            <router-view :key="$route.fullPath" />
+            <div class="view-box">
+                <router-view :key="$route.fullPath" />
+            </div>
         </div>
     </div>
 </template>

@@ -2,7 +2,7 @@
     <div class="people-editor">
         <el-tooltip 
         v-for="(item, index) in model"
-        :key="index"
+        :key="item._id"
         class="item" 
         effect="dark" 
         :content="item.name" 
@@ -11,7 +11,7 @@
             <div 
             class="people-item"
             >
-                {{item.name.slice(0, 1)}}
+                {{firstName(item.name)}}
 
                 <i 
                     v-if="!readonly"
@@ -51,9 +51,15 @@ export default {
             this.$prompt('请输入人员姓名', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                inputValidator(val) {
+                inputValidator: val => {
                     if (!val) {
                         return '请输入姓名';
+                    }
+
+                    if (this.model.some(item => {
+                        return item.name === val;
+                    })) {
+                        return '请勿输入重复的人员';
                     }
 
                     return true;
@@ -66,6 +72,13 @@ export default {
         },
         delHandler(index) {
             this.model.splice(index, 1);
+        },
+        firstName(name) {
+            if (!name) {
+                return '';
+            }
+
+            return name.slice(0, 1);
         },
     }
 };

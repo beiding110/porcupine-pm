@@ -2,13 +2,14 @@
     <div 
     class="card-pro"
     @click="goto('/teamwork/task')"
+    @contextmenu.prevent="contextMenuHandler"
     >
-        <div class="cover">
+        <div class="cover" :style="{background:`#${themeColor}`}">
             {{coverText}}
         </div>
         <div class="footer">
             <div class="name">
-                {{data.title}}
+                {{data.proname}}
             </div>
 
             <div class="dropdown">
@@ -31,7 +32,7 @@ export default {
         data: {
             type: Object,
             default: () => ({
-                title: '默认项目'
+                proname: '默认项目'
             }),
         },
     },
@@ -42,14 +43,14 @@ export default {
                     text: '编辑',
                     command: 'edit',
                     handler: () => {
-                        // TODO: 编辑操作
+                        this.editHandler();
                     },
                 },
                 {
                     text: '删除',
                     command: 'del',
                     handler: () => {
-                        // TODO: 删除接口
+                        this.delHandler();
                     },
                 },
             ]
@@ -57,11 +58,49 @@ export default {
     },
     computed: {
         coverText() {
-            return this.data.title.slice(0, 1);
+            return this.data.proname.slice(0, 1);
+        },
+        themeColor() {
+            return this.data._id.slice(-7, -1);
         },
     },
     methods: {
-        
+        contextMenuHandler(event) {
+            this.$contextmenu({
+                items: [
+                    {
+                        label: '编辑',
+                        onClick: () => {
+                            this.editHandler();
+                        },
+                    },
+                    {
+                        label: '删除',
+                        onClick: () => {
+                            showConfirm('确认以删除', '', () => {
+                                this.delHandler();
+                            });
+                        }
+                    },
+                ],
+                x: event.clientX,
+                y: event.clientY,
+            });
+
+            return false;
+        },
+        editHandler() {
+            this.$emit('edit');
+        },
+        delHandler() {
+            this.$post('/project/del', {
+                procode: this.data._id,
+            }, () => {
+                showMsg('删除成功');
+
+                this.$emit('reload');
+            });
+        },
     }
 };
 </script>

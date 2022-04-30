@@ -32,8 +32,40 @@ function timePattern(date, fmt) {
     return fmt;
 }
 
+function calcIntersection(arr1, arr2, fun) {
+    var intersection = [],
+        fun = fun || function(item1, item2) {return item1 === item2;};
+
+    arr1.forEach(item1 => {
+        if (arr2.some(item2 => {
+            return fun(item1, item2)
+        })) {
+            intersection.push(item1);
+        }
+    });
+
+    var sa1 = arr1.filter(item => {
+        return !intersection.some(i => {
+            return fun(item, i);
+        })
+    });
+
+    var sa2 = arr2.filter(item => {
+        return !intersection.some(i => {
+            return fun(item, i);
+        })
+    });
+
+    return {
+        left: sa1,
+        inc: intersection,
+        right: sa2,
+    }
+}
+
 module.exports = {
     getTime() {
         return timePattern(new Date(), 'yyyy-MM-dd HH:mm:ss');
-    }
+    },
+    calcIntersection,
 }
