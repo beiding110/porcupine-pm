@@ -94,30 +94,8 @@ router.post('/form', function (req, res, next) {
                 return false;
             }
 
-            Project.findById(form.procode, (err, proRow) => {
-                if (err) {
-                    tdata = resFrame('error', '', err);
-                    res.send(tdata);
-                    return false;
-                }
-
-                proRow.group = proRow.group || [];
-
-                proRow.group.push(data._id);
-
-                Project.findByIdAndUpdate(form.procode, proRow, (err) => {
-                    if (err) {
-                        tdata = resFrame('error', '', err);
-                        res.send(tdata);
-                        return false;
-                    }
-
-                    tdata = resFrame(data);
-                    res.send(tdata);
-                });
-            });
-
-            
+            tdata = resFrame(data);
+            res.send(tdata);
         });
     }
 });
