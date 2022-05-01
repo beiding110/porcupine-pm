@@ -1,7 +1,7 @@
 <template>
     <div 
     class="card-pro"
-    @click="goto('/teamwork/task')"
+    @click="goto(`/teamwork/${data._id}/task`)"
     @contextmenu.prevent="contextMenuHandler"
     >
         <div class="cover" :style="{background:`#${themeColor}`}">

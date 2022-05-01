@@ -8,7 +8,7 @@
         <div class="form-add" v-else>
             <el-input 
                 ref="input"
-                v-model="form.groupname" 
+                v-model="form.title" 
                 size="small"
                 @blur="blurHandler"
                 @keydown.native.enter="submitHandler"

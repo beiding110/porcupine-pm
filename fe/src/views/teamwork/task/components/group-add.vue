@@ -8,7 +8,7 @@
         <div class="form-add" v-else>
             <el-input 
                 ref="input"
-                v-model="form.groupname" 
+                v-model="form.title" 
                 size="small"
                 @blur="blurHandler"
                 @keydown.native.enter="submitHandler"
@@ -68,18 +68,25 @@ export default {
             };
         },
         submitHandler() {
-            if (!this.form.groupname) {
+            if (!this.form.title) {
                 return;
             }
 
-            // TODO: 提交创建新分组
+            this.$post('/taskgroup/form', {
+                ...this.form,
+                procode: this.$route.params.procode,
+            }, () => {
+                showMsg('添加分组成功');
 
-            this.formShow = false;
+                this.formShow = false;
             
-            this.resetForm();
+                this.resetForm();
+
+                this.$emit('reload');
+            });
         },
         blurHandler() {
-            if (!this.form.groupname) {
+            if (!this.form.title) {
                 this.closeHandler();
             }
         }

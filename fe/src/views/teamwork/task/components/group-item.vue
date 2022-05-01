@@ -184,6 +184,7 @@ export default {
             this.$prompt('分组名称', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
+                inputValue: this.data.title,
                 inputValidator(val) {
                     if (!val) {
                         return '请输入分组名称';
@@ -192,11 +193,22 @@ export default {
                     return true;
                 }
             }).then(({ value }) => {
-                // TODO: 分组名修改接口
+                this.$post('/taskgroup/form', {
+                    ...this.data,
+                    title: value,
+                }, () => {
+                    showMsg('分组重命名成功');
+
+                    this.$emit('reload');
+                });
             });
         },
         delHandler() {
-            // TODO: 删除分组
+            this.$post('/taskgroup/del', this.data, () => {
+                showMsg('分组删除成功');
+
+                this.$emit('reload');
+            });
         },
     },
 }

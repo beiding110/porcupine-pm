@@ -1,6 +1,6 @@
 export default {
-    path: 'task',
-    redirect: 'task/index',
+    path: ':procode/task',
+    redirect: ':procode/task/index',
     component: () => import(/*webpackChunkName: 'pc-tw-task'*/ '@layout/empty'),
     children: [
         {

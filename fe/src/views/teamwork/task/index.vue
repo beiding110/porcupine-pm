@@ -9,11 +9,15 @@
                 <group-item 
                     v-for="(item, index) in tableData" 
                     :key="index"
+                    :data="item"
+                    @reload="queryData"
                 ></group-item>
             </draggable>
         </div>
 
-        <group-add></group-add>
+        <group-add
+            @reload="queryData"
+        ></group-add>
     </div>
 </template>
 
@@ -30,9 +34,21 @@ export default {
     },
     data() {
         return {
-            tableData: [1, 2],
+            tableData: [],
         }
-    }
+    },
+    methods: {
+        queryData() {
+            this.$get('/taskgroup/list', {
+                procode: this.$route.params.procode,
+            }, data => {
+                this.tableData = data;
+            });
+        },
+    },
+    mounted() {
+        this.queryData();
+    },
 };
 </script>
 

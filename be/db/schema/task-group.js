@@ -3,20 +3,21 @@ const mongoose = require('../index.js');
 var Schema = mongoose.Schema;
 
 let data = {
-    proname: String,
-    detail: String,
+    title: String,
+    procode: String,
     adduser: String,
     addtime: String,
+    
     scbj: Number,
-    member: [
+    task: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'project-member'
+            ref: 'task'
         }
     ],
 };
 
 var dataSchema = Schema(data);
-var Data = mongoose.model('project', dataSchema);
+var Data = mongoose.model('task-group', dataSchema);
 
 module.exports = Data;
