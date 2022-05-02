@@ -1,6 +1,8 @@
 const mongoose = require('../index.js');
 const Chain = require('../../utils/Chain');
 
+const resFrame = require('../../utils/resFrame');
+
 var Schema = mongoose.Schema;
 
 let data = {

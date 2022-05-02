@@ -5,6 +5,7 @@ const resFrame = require('../utils/resFrame');
 const app = require('../utils/app');
 
 const TaskGroup = require('../db/schema/task-group');
+const Task = require('../db/schema/task');
 const Chain = require('../utils/Chain');
 
 router.get('/list', function (req, res, next) {
@@ -158,7 +159,8 @@ router.post('/del', function (req, res, next) {
             return false;
         }
 
-        // TODO: 同时需要移除task；
+        // 分组中的任务同步修改scbj
+        Task.delRows(data.task);
 
         tdata = resFrame(data);
         res.send(tdata);
