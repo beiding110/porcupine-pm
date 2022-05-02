@@ -3,34 +3,30 @@
     ref="form"
     v-model="form"
     table
-    :submit-url="`${getGetters('twUrl')}/xmgl/project/add`"
-    :detail-url="`${getGetters('twUrl')}/xmgl/project/detail`"
+    submit-url="/task/form"
+    detail-url="/task/detail"
     @cancle="cancleHandler"
     :detail-extra="detailExtra"
     >
         <el-form-item 
-        label="所属项目" 
-        prop="proname" 
-        :rules="newRule('所属项目' ,'required')"
-        >
-            <el-input v-model="form.proname"></el-input>
-        </el-form-item>
-
-        <el-form-item 
         label="所属分组" 
-        prop="groupname" 
+        prop="groupcode" 
         :rules="newRule('所属分组' ,'required')"
         >
-            <el-input v-model="form.groupname"></el-input>
+            <my-select
+                placeholder=""
+                v-model="form.groupcode"
+                :data="groupData"
+                :props="{label:'title',value:'_id'}"
+            ></my-select>
         </el-form-item>
 
         <el-form-item 
-        class="table-full-row"
         label="任务名称" 
-        prop="taskname" 
+        prop="title" 
         :rules="newRule('任务名称' ,'required')"
         >
-            <el-input v-model="form.taskname"></el-input>
+            <el-input v-model="form.title"></el-input>
         </el-form-item>
 
         <el-form-item 
@@ -55,14 +51,14 @@
             </el-radio-group>
         </el-form-item>
 
-        <el-form-item 
+        <!-- <el-form-item 
         class="table-full-row"
         label="人员" 
-        prop="people" 
+        prop="member" 
         :rules="newRule('人员' ,'required')"
         >
             <people-editor v-model="form.people"></people-editor>
-        </el-form-item>
+        </el-form-item> -->
 
         <el-form-item 
         label="计划开始" 
@@ -114,27 +110,32 @@ export default {
         PeopleEditor,
     },
     props: {
-        
+        data: {
+            type: Object,
+            default: () => ({}),
+        },
     },
     data: () => ({
         form: {
             proname: '',
             proid: '',
-            groupname: '',
+            groupcode: '',
             groupid: '',
-            taskname: '',
+            title: '',
             duration: 0,
             level: 'm',
             starttime: '',
             endtime: '',
             detail: '',
-            people: [],
-        }
+            member: [],
+        },
+
+        groupData: [],
     }),
     computed: {
         detailExtra() {
             return {
-                rowguid: this.getQuery('rowguid')
+                taskcode: this.data._id,
             };
         }
     },
@@ -145,10 +146,17 @@ export default {
         beforeSend(send, deny) {
             send();
         },
+        queryGroupData() {
+            this.$get('/taskgroup/list', {
+                procode: this.$route.params.pocode,
+            }, data => {
+                this.groupData = data;
+            });
+        },
     },
     created() {
-
-    }
+        this.queryGroupData();
+    },
 }
 </script>
 

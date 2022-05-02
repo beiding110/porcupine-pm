@@ -57,6 +57,12 @@ export default {
         Card,
         FormPage,
     },
+    props: {
+        groupcode: {
+            type: String,
+            default: '',
+        },
+    },
     data() {
         return {
             formShow: false,
@@ -82,22 +88,30 @@ export default {
         },
         resetForm() {
             this.form = {
-                groupname: '',
+                title: '',
             };
         },
         submitHandler() {
-            if (!this.form.groupname) {
+            if (!this.form.title) {
                 return;
             }
 
-            // TODO: 提交创建新任务
+            this.$post('/task/form', {
+                ...this.form,
+                procode: this.$route.params.procode,
+                groupcode: this.groupcode,
+            }, () => {
+                showMsg('添加任务成功');
 
-            this.formShow = false;
+                this.formShow = false;
             
-            this.resetForm();
+                this.resetForm();
+
+                this.$emit('reload');
+            });
         },
         blurHandler() {
-            if (!this.form.groupname) {
+            if (!this.form.title) {
                 this.closeHandler();
             }
         },

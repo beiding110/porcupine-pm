@@ -42,19 +42,21 @@
             </div>
         </card>
 
-        <div class="body">
-            <draggable v-model="data.list" group="tasks">
+        <div class="body" v-if="data.task && data.task.length">
+            <draggable v-model="data.task" group="tasks">
                 <task-item
-                    v-for="(item, index) in data.list"
+                    v-for="(item, index) in data.task"
                     :key="index"
                     :data="item"
+                    @reload="$emit('reload')"
                 ></task-item>
             </draggable>
         </div>
 
         <div class="foot">
             <task-add
-                @click.native="dialogShow"
+                :groupcode="data._id"
+                @reload="$emit('reload')"
             ></task-add>
         </div>
     </div>
@@ -79,52 +81,52 @@ export default {
         data: {
             type: Object,
             default: () => ({
-                title: '默认分组',
-                todo: 0,
-                noStart: 0,
-                doing: 0,
-                done: 0,
-                list: [
-                    {
-                        title: '任务1',
-                        state: 0,
-                        starttime: '2022/4/28',
-                        endtime: '2022/4/29',
-                        duration: 8,
-                        level: 'h',
-                        people: [
-                            {
-                                name: 'yzh'
-                            },
-                        ]
-                    },
-                    {
-                        title: '任务2',
-                        state: 0,
-                        starttime: '2022/4/28',
-                        endtime: '2022/4/29',
-                        duration: 8,
-                        level: 'h',
-                        people: [
-                            {
-                                name: 'yzh'
-                            },
-                        ]
-                    },
-                    {
-                        title: '任务3',
-                        state: 0,
-                        starttime: '2022/4/28',
-                        endtime: '2022/4/29',
-                        duration: 8,
-                        level: 'h',
-                        people: [
-                            {
-                                name: 'yzh'
-                            },
-                        ]
-                    },
-                ],
+                // title: '默认分组',
+                // todo: 0,
+                // noStart: 0,
+                // doing: 0,
+                // done: 0,
+                // task: [
+                //     {
+                //         title: '任务1',
+                //         state: 0,
+                //         starttime: '2022/4/28',
+                //         endtime: '2022/4/29',
+                //         duration: 8,
+                //         level: 'h',
+                //         people: [
+                //             {
+                //                 name: 'yzh'
+                //             },
+                //         ]
+                //     },
+                //     {
+                //         title: '任务2',
+                //         state: 0,
+                //         starttime: '2022/4/28',
+                //         endtime: '2022/4/29',
+                //         duration: 8,
+                //         level: 'h',
+                //         people: [
+                //             {
+                //                 name: 'yzh'
+                //             },
+                //         ]
+                //     },
+                //     {
+                //         title: '任务3',
+                //         state: 0,
+                //         starttime: '2022/4/28',
+                //         endtime: '2022/4/29',
+                //         duration: 8,
+                //         level: 'h',
+                //         people: [
+                //             {
+                //                 name: 'yzh'
+                //             },
+                //         ]
+                //     },
+                // ],
             }),
         },
     },

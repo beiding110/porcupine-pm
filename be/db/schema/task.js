@@ -4,11 +4,15 @@ var Schema = mongoose.Schema;
 
 let data = {
     title: String,
+    detail: String,
     starttime: String,
     endtime: String,
     duration: Number,
     level: String,
     state: String,
+
+    procode: String,
+    groupcode: String,
 
     adduser: String,
     addtime: String,
@@ -22,6 +26,6 @@ let data = {
 };
 
 var dataSchema = Schema(data);
-var Data = mongoose.model('project-member', dataSchema);
+var Data = mongoose.model('task', dataSchema);
 
 module.exports = Data;

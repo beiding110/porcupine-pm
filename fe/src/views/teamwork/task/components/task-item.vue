@@ -24,7 +24,7 @@
             <div class="people">
                 <people-editor 
                     readonly 
-                    :value="data.people"
+                    :value="data.member"
                 ></people-editor>
             </div>
         </div>
@@ -46,6 +46,7 @@
         >
             <form-page
                 v-if="dialogVisible"
+                :data="form"
                 @cancle="dialogClose"
             ></form-page>
         </my-dialog>
@@ -85,7 +86,7 @@ export default {
                     text: '编辑',
                     command: 'edit',
                     handler: () => {
-                        this.editHandler();
+                        this.editHandler(this.data);
                     },
                 },
                 {
@@ -105,7 +106,7 @@ export default {
                     {
                         label: '编辑',
                         onClick: () => {
-                            this.editHandler();
+                            this.editHandler(this.data);
                         },
                     },
                     {
@@ -141,11 +142,18 @@ export default {
             return false;
         },
         delHandler() {
-            // TODO: 删除接口
+            this.$post('/task/del', this.data, () => {
+                showMsg('删除任务成功');
+
+                this.reloadHandler();
+            });
         },
         shiftState(state) {
             // TODO: 设置状态为
             alert(state);
+        },
+        reloadHandler() {
+            this.$emit('reload');
         },
     },
 };

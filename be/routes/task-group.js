@@ -5,7 +5,7 @@ const resFrame = require('../utils/resFrame');
 const app = require('../utils/app');
 
 const TaskGroup = require('../db/schema/task-group');
-const Project = require('../db/schema/project');
+const Chain = require('../utils/Chain');
 
 router.get('/list', function (req, res, next) {
     const {title, procode} = req.query,
@@ -37,16 +37,37 @@ router.get('/list', function (req, res, next) {
         search.procode = procode;
     }
 
-    TaskGroup.find(search, (err, data) => {
-        if (err) {
-            tdata = resFrame('error', '', err);
-            res.send(tdata);
-            return false;
-        }
+    var groupData,
+        groupWithTaskData;
 
-        tdata = resFrame(data);
+    new Chain().link(next => {
+        TaskGroup.find(search, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            groupData = data;
+
+            next();
+        });
+    }).link(next => {
+        TaskGroup.populate(groupData, 'task', (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            groupWithTaskData = data;
+
+            next();
+        });
+    }).link(next => {
+        tdata = resFrame(groupWithTaskData);
         res.send(tdata);
-    });
+    }).run();
 });
 
 router.post('/form', function (req, res, next) {
