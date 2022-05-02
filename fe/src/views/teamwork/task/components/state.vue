@@ -17,7 +17,7 @@ import CONFIG from '../config/state';
 export default {
     props: {
         data: {
-            type: Number,
+            type: [Number, String],
             default: 0,
         },
     },

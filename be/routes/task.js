@@ -131,6 +131,7 @@ router.post('/form', function (req, res, next) {
 
         form.adduser = ppm_userid;
         form.addtime = app.getTime();
+        form.state = form.state || '0';
 
         var taskData,
             taskGroupData;
@@ -260,6 +261,43 @@ router.post('/del', function (req, res, next) {
 
         // 移除组中的task
         TaskGroup.removeTaskId(data.groupcode, data.id);
+
+        tdata = resFrame(data);
+        res.send(tdata);
+    });
+});
+
+router.post('/updatestete', function (req, res, next) {
+    const {_id, state} = req.body,
+        {ppm_userid} = req.cookies;
+
+    var tdata;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    if (!_id) {
+        tdata = resFrame('error', '', '请选择要更新的项');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    Task.findByIdAndUpdate(_id, {
+        state
+    }, (err, data) => {
+        if (err) {
+            tdata = resFrame('error', '', err);
+            res.send(tdata);
+            return false;
+        }
 
         tdata = resFrame(data);
         res.send(tdata);

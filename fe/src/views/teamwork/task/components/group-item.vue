@@ -20,16 +20,16 @@
                 >
                     <div class="data">
                         <div class="todo">
-                            {{data.todo}}
+                            {{num[0]}}
                         </div>
                         <div class="no-start">
-                            {{data.noStart}}
+                            {{num[1]}}
                         </div>
                         <div class="doing">
-                            {{data.doing}}
+                            {{num[2]}}
                         </div>
                         <div class="done">
-                            {{data.done}}
+                            {{num[3]}}
                         </div>
                     </div>
                 </el-tooltip>
@@ -137,7 +137,6 @@ export default {
                     text: '重命名',
                     command: 'edit',
                     handler: () => {
-                        // TODO: 编辑操作
                         this.editHandler();
                     },
                 },
@@ -145,15 +144,27 @@ export default {
                     text: '删除',
                     command: 'del',
                     handler: () => {
-                        // TODO: 删除接口
+                        this.delHandler();
                     },
                 },
-            ]
+            ],
         };
     },
     computed: {
         dataContent() {
-            return `待办：${this.data.todo} 未开始：${this.data.noStart} 进行中：${this.data.doing} 已完成：${this.data.done}`
+            return `待办：${this.num[0]} 未开始：${this.num[1]} 进行中：${this.num[2]} 已完成：${this.num[3]}`
+        },
+        num() {
+            if (!this.data.task || !this.data.task.length) {
+                return [0, 0, 0, 0];
+            }
+
+            return [
+                this.data.task.filter(item => item.state === '0').length,
+                this.data.task.filter(item => item.state === '1').length,
+                this.data.task.filter(item => item.state === '2').length,
+                this.data.task.filter(item => item.state === '3').length,
+            ]
         },
     },
     methods: {

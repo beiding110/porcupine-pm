@@ -118,7 +118,7 @@ export default {
                                 label: item.text,
                                 icon: item.icon,
                                 onClick: () => {
-                                    this.shiftState(item);
+                                    this.shiftState(key);
                                 },
                             });
 
@@ -149,8 +149,13 @@ export default {
             });
         },
         shiftState(state) {
-            // TODO: 设置状态为
-            alert(state);
+            this.data.state = state;
+
+            this.$post('/task/updatestete', this.data, () => {
+                showMsg('任务状态更新成功');
+
+                this.reloadHandler();
+            });
         },
         reloadHandler() {
             this.$emit('reload');

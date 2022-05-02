@@ -20,7 +20,7 @@ let data = {
     member: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'task'
+            ref: 'project-member'
         }
     ]
 };

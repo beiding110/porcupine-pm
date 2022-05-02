@@ -3,6 +3,7 @@
     ref="form"
     v-model="form"
     table
+    send-str
     submit-url="/task/form"
     detail-url="/task/detail"
     @cancle="cancleHandler"
@@ -51,14 +52,19 @@
             </el-radio-group>
         </el-form-item>
 
-        <!-- <el-form-item 
+        <el-form-item 
         class="table-full-row"
         label="人员" 
         prop="member" 
         :rules="newRule('人员' ,'required')"
         >
-            <people-editor v-model="form.people"></people-editor>
-        </el-form-item> -->
+            <my-select 
+                multiple
+                v-model="form.member" 
+                :data="memberData"
+                :props="{label:'name', value:'_id'}"
+            ></my-select>
+        </el-form-item>
 
         <el-form-item 
         label="计划开始" 
@@ -102,12 +108,10 @@
 import FORM_PAGE_MIXIN from '@mixins/form-page';
 import DIALOG_FORM_PAGE_MIXIN from '@mixins/dialog-form-page';
 
-import PeopleEditor from '../project/components/people-editor';
-
 export default {
     mixins: [ FORM_PAGE_MIXIN, DIALOG_FORM_PAGE_MIXIN ],
     components: {
-        PeopleEditor,
+        
     },
     props: {
         data: {
@@ -117,10 +121,8 @@ export default {
     },
     data: () => ({
         form: {
-            proname: '',
-            proid: '',
+            procode: '',
             groupcode: '',
-            groupid: '',
             title: '',
             duration: 0,
             level: 'm',
@@ -131,6 +133,7 @@ export default {
         },
 
         groupData: [],
+        memberData: [],
     }),
     computed: {
         detailExtra() {
@@ -153,9 +156,18 @@ export default {
                 this.groupData = data;
             });
         },
+        queryProMember() {
+            this.$get('/projectmember/list', {
+                procode: this.$route.params.procode,
+            }, data => {
+                this.memberData = data;
+            });
+        },
     },
     created() {
         this.queryGroupData();
+
+        this.queryProMember();
     },
 }
 </script>

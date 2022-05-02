@@ -53,7 +53,12 @@ router.get('/list', function (req, res, next) {
             next();
         });
     }).link(next => {
-        TaskGroup.populate(groupData, 'task', (err, data) => {
+        TaskGroup.populate(groupData, {
+            path: 'task',
+            populate: {
+                path: 'member',
+            },
+        }, (err, data) => {
             if (err) {
                 tdata = resFrame('error', '', err);
                 res.send(tdata);
