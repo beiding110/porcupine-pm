@@ -42,7 +42,12 @@ router.get('/list', function (req, res, next) {
         groupWithTaskData;
 
     new Chain().link(next => {
-        TaskGroup.find(search, (err, data) => {
+        TaskGroup.find(search, null, {
+            sort: {
+                order: 1,
+                addtime: 1,
+            },
+        }, (err, data) => {
             if (err) {
                 tdata = resFrame('error', '', err);
                 res.send(tdata);
@@ -161,6 +166,33 @@ router.post('/del', function (req, res, next) {
 
         // 分组中的任务同步修改scbj
         Task.delRows(data.task);
+
+        tdata = resFrame(data);
+        res.send(tdata);
+    });
+});
+
+router.post('/updateorder', function (req, res, next) {
+    const orderArr = req.body,
+        {ppm_userid} = req.cookies;
+
+    var tdata;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    TaskGroup.updateOrder(orderArr, (err, data) => {
+        if (err) {
+            tdata = resFrame('error', '', err);
+            res.send(tdata);
+            return false;
+        }
 
         tdata = resFrame(data);
         res.send(tdata);

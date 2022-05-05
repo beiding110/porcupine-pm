@@ -5,6 +5,7 @@
             v-model="tableData" 
             group="groups"
             class="group-dragger"
+            @end="dragEndHandler"
             >
                 <group-item 
                     v-for="(item, index) in tableData" 
@@ -44,6 +45,16 @@ export default {
             }, data => {
                 this.tableData = data;
             });
+        },
+        dragEndHandler() {
+            this.$post('/taskgroup/updateorder', this.tableData.map((item, index) => {
+                return {
+                    _id: item._id,
+                    order: index,
+                };
+            }), () => {
+
+            }, true);
         },
     },
     mounted() {

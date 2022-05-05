@@ -7,6 +7,7 @@ var Schema = mongoose.Schema;
 
 let data = {
     title: String,
+    order: Number,
 
     adduser: String,
     addtime: String,
@@ -15,14 +16,14 @@ let data = {
         type: Schema.Types.ObjectId,
         ref: 'project'
     },
-    
-    scbj: Number,
     task: [
         {
             type: Schema.Types.ObjectId,
             ref: 'task'
         }
     ],
+    
+    scbj: Number,
 };
 
 var dataSchema = Schema(data);
@@ -34,9 +35,8 @@ dataSchema.statics.removeTaskId = function(groupcode, taskcode, cb) {
     new Chain().link(next => {
         this.findById(groupcode, (err, data) => {
             if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
+                cb && cb(err);
+                return;
             }
     
             var index = data.task.findIndex(item => {
@@ -52,12 +52,11 @@ dataSchema.statics.removeTaskId = function(groupcode, taskcode, cb) {
     }).link(next => {
         this.findByIdAndUpdate(groupcode, groupData, err => {
             if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
+                cb && cb(err);
+                return;
             }
 
-            cb && cb();
+            cb && cb(null);
         });
     }).run();
 };
@@ -69,9 +68,8 @@ dataSchema.statics.addTaskId = function(groupcode, taskcode, cb) {
     new Chain().link(next => {
         this.findById(groupcode, (err, data) => {
             if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
+                cb && cb(err);
+                return;
             }
     
             data.task.push(mongoose.Types.ObjectId(taskcode));
@@ -83,14 +81,38 @@ dataSchema.statics.addTaskId = function(groupcode, taskcode, cb) {
     }).link(next => {
         this.findByIdAndUpdate(groupcode, groupData, err => {
             if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
+                cb && cb(err);
                 return false;
             }
 
             cb && cb();
         });
     }).run();
+};
+
+// 更新顺序
+dataSchema.statics.updateOrder = function(arr, cb) {
+    var bwArr = arr.map(item => {
+        return {
+            updateOne: {
+                filter: {
+                    _id: item._id,
+                },
+                update: {
+                    order: item.order,
+                },
+            },
+        };
+    });
+
+    this.bulkWrite(bwArr, (err, data) => {
+        if (err) {
+            cb && cb(err);
+            return;
+        }
+
+        cb && cb(null, data);
+    });
 };
 
 var Data = mongoose.model('task-group', dataSchema);
