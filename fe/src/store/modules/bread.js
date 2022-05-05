@@ -38,7 +38,7 @@ export default {
                 path: fullPath
             };
 
-            if(!meta.bread || meta.bread.length < 2) {
+            if(meta.tagNav) {
                 bread = [];
             }
 

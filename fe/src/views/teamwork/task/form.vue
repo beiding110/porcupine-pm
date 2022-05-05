@@ -73,8 +73,8 @@
             <el-date-picker
                 v-model="form.starttime"
                 type="date"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
             ></el-date-picker>
         </el-form-item>
 
@@ -85,8 +85,8 @@
             <el-date-picker
                 v-model="form.endtime"
                 type="date"
-                format="yyyy/MM/dd"
-                value-format="yyyy/MM/dd"
+                format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd"
             ></el-date-picker>
         </el-form-item>
 

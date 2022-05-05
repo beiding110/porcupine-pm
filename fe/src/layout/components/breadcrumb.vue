@@ -34,5 +34,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.top-nav-breadcrumb{display:inline-block; line-height:50px; margin-left:20px;}
+.top-nav-breadcrumb{
+}
 </style>

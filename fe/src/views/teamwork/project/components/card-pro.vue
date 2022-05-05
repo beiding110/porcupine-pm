@@ -47,6 +47,13 @@ export default {
                     },
                 },
                 {
+                    text: '工时统计',
+                    command: 'taskreport',
+                    handler: () => {
+                        this.goto(`/teamwork/${this.data._id}/taskreport/list`);
+                    },
+                },
+                {
                     text: '删除',
                     command: 'del',
                     handler: () => {
@@ -72,6 +79,12 @@ export default {
                         label: '编辑',
                         onClick: () => {
                             this.editHandler();
+                        },
+                    },
+                    {
+                        label: '工时统计',
+                        onClick: () => {
+                            this.goto(`/teamwork/${this.data._id}/taskreport/list`);
                         },
                     },
                     {

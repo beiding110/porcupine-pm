@@ -235,9 +235,10 @@ export default {
         width: 280px;
         height: 100%;
         vertical-align: top;
+        margin-right: 20px;
 
         & + .group-item{
-            margin-left: 20px;
+            
         }
 
         & > .head{

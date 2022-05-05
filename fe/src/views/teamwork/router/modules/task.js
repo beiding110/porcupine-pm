@@ -1,7 +1,7 @@
 export default {
     path: ':procode/task',
     redirect: ':procode/task/index',
-    component: () => import(/*webpackChunkName: 'pc-tw-task'*/ '@layout/empty'),
+    component: () => import(/*webpackChunkName: 'pc-tw-task'*/ '../../layout/project'),
     children: [
         {
             path: 'index',

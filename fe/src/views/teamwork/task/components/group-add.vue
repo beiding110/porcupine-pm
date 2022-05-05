@@ -101,7 +101,6 @@ export default {
         display: inline-block;
         vertical-align: top;
         width: 280px;
-        margin-left: 20px;
         box-sizing: border-box;
         
         .btn-add{

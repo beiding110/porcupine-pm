@@ -7,9 +7,14 @@ var Schema = mongoose.Schema;
 
 let data = {
     title: String,
-    procode: String,
+
     adduser: String,
     addtime: String,
+
+    procode: {
+        type: Schema.Types.ObjectId,
+        ref: 'project'
+    },
     
     scbj: Number,
     task: [

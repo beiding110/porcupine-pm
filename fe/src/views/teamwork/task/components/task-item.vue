@@ -41,14 +41,15 @@
 
         <my-dialog 
         v-model="dialogVisible" 
-        title="任务项目"
+        :title="dialogTitle"
         width="700px"
         >
-            <form-page
+            <component
                 v-if="dialogVisible"
+                :is="dialogComponent"
                 :data="form"
                 @cancle="dialogClose"
-            ></form-page>
+            ></component>
         </my-dialog>
     </card>
 </template>
@@ -63,6 +64,7 @@ import State from './state';
 import PeopleEditor from '../../project/components/people-editor';
 import DropdownMenu from '@components-sys/dropdown-menu';
 import FormPage from '../form';
+import FormPageTaskReport from '../../task-report/form';
 
 export default {
     mixins: [DIALOG_LIST_MIXIN],
@@ -72,6 +74,7 @@ export default {
         PeopleEditor,
         DropdownMenu,
         FormPage,
+        FormPageTaskReport,
     },
     props: {
         data: {
@@ -86,7 +89,22 @@ export default {
                     text: '编辑',
                     command: 'edit',
                     handler: () => {
+                        this.dialogTitle = '编辑任务';
+                        this.dialogComponent = 'form-page';
                         this.editHandler(this.data);
+                    },
+                },
+                {
+                    text: '上报工时',
+                    command: 'report',
+                    handler: () => {
+                        this.dialogTitle = '上报工时';
+                        this.dialogComponent = 'form-page-task-report';
+                        this.form = {
+                            procode: this.$route.params.procode,
+                            taskcode: this.data._id,
+                        };
+                        this.dialogShow();
                     },
                 },
                 {
@@ -96,7 +114,10 @@ export default {
                         this.delHandler();
                     },
                 },
-            ]
+            ],
+
+            dialogTitle: '',
+            dialogComponent: '',
         };
     },
     methods: {
@@ -106,7 +127,21 @@ export default {
                     {
                         label: '编辑',
                         onClick: () => {
+                            this.dialogTitle = '编辑任务';
+                            this.dialogComponent = 'form-page';
                             this.editHandler(this.data);
+                        },
+                    },
+                    {
+                        label: '上报工时',
+                        onClick: () => {
+                            this.dialogTitle = '上报工时';
+                            this.dialogComponent = 'form-page-task-report';
+                            this.form = {
+                                procode: this.$route.params.procode,
+                                taskcode: this.data._id,
+                            };
+                            this.dialogShow();
                         },
                     },
                     {

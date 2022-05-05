@@ -13,8 +13,14 @@ let data = {
     level: String,
     state: String,
 
-    procode: String,
-    groupcode: String,
+    procode: {
+        type: Schema.Types.ObjectId,
+        ref: 'project'
+    },
+    groupcode: {
+        type: Schema.Types.ObjectId,
+        ref: 'task-group'
+    },
 
     adduser: String,
     addtime: String,
