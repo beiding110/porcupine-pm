@@ -304,4 +304,43 @@ router.post('/updatestete', function (req, res, next) {
     });
 });
 
+router.post('/updatedrag', function (req, res, next) {
+    const groupArr = req.body,
+        {ppm_userid} = req.cookies;
+
+    var tdata;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    new Chain().link(next => {
+        Task.updateDrag(groupArr, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            next();
+        });
+    }).link(next => {
+        TaskGroup.updateTaskId(groupArr, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+    
+            tdata = resFrame(data);
+            res.send(tdata);
+        });
+    }).run();
+});
+
 module.exports = router;

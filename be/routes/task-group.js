@@ -63,6 +63,10 @@ router.get('/list', function (req, res, next) {
             path: 'task',
             populate: {
                 path: 'member',
+                options: {
+                    order: 1,
+                    addtime: 1,
+                },
             },
         }, (err, data) => {
             if (err) {

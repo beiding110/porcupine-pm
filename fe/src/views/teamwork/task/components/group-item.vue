@@ -42,8 +42,12 @@
             </div>
         </card>
 
-        <div class="body" v-if="data.task && data.task.length">
-            <draggable v-model="data.task" group="tasks">
+        <div class="body" :class="{empty: !data.task || !data.task.length}">
+            <draggable 
+            v-model="data.task" 
+            group="tasks"
+            @change="dragEndHandler"
+            >
                 <task-item
                     v-for="(item, index) in data.task"
                     :key="index"
@@ -223,6 +227,9 @@ export default {
                 this.$emit('reload');
             });
         },
+        dragEndHandler() {
+            this.$emit('taskdrag');
+        },
     },
 }
 </script>
@@ -298,6 +305,10 @@ export default {
 
         & > .body, & > .foot{
             margin-top: 10px;
+
+            &.empty{
+                margin-top: 0;
+            }
         }
     }
 </style>

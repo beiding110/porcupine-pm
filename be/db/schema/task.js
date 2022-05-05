@@ -12,6 +12,7 @@ let data = {
     duration: Number,
     level: String,
     state: String,
+    order: Number,
 
     procode: {
         type: Schema.Types.ObjectId,
@@ -21,16 +22,16 @@ let data = {
         type: Schema.Types.ObjectId,
         ref: 'task-group'
     },
-
-    adduser: String,
-    addtime: String,
-    scbj: Number,
     member: [
         {
             type: Schema.Types.ObjectId,
             ref: 'project-member'
         }
-    ]
+    ],
+
+    adduser: String,
+    addtime: String,
+    scbj: Number,
 };
 
 var dataSchema = Schema(data);
@@ -50,6 +51,39 @@ dataSchema.statics.delRows = function(rows, cb) {
         }
 
         cb && cb(err, data);
+    });
+};
+
+// 更新顺序及分组
+dataSchema.statics.updateDrag = function(groupArr, cb) {
+    var bwArr = groupArr.reduce((ba, group) => {
+        ba = [
+            ...ba,
+            ...group.task.map(item => {
+                return {
+                    updateOne: {
+                        filter: {
+                            _id: item._id,
+                        },
+                        update: {
+                            order: item.order,
+                            groupcode: item.groupcode,
+                        },
+                    },
+                };
+            }),
+        ]
+
+        return ba;
+    }, []);
+
+    this.bulkWrite(bwArr, (err, data) => {
+        if (err) {
+            cb && cb(err);
+            return;
+        }
+
+        cb && cb(null, data);
     });
 };
 

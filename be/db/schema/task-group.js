@@ -115,6 +115,31 @@ dataSchema.statics.updateOrder = function(arr, cb) {
     });
 };
 
+// 更新顺序
+dataSchema.statics.updateTaskId = function(arr, cb) {
+    var bwArr = arr.map(item => {
+        return {
+            updateOne: {
+                filter: {
+                    _id: item._id,
+                },
+                update: {
+                    task: item.task.map(item => item._id),
+                },
+            },
+        };
+    });
+
+    this.bulkWrite(bwArr, (err, data) => {
+        if (err) {
+            cb && cb(err);
+            return;
+        }
+
+        cb && cb(null, data);
+    });
+};
+
 var Data = mongoose.model('task-group', dataSchema);
 
 module.exports = Data;

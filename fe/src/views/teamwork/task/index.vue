@@ -5,13 +5,14 @@
             v-model="tableData" 
             group="groups"
             class="group-dragger"
-            @end="dragEndHandler"
+            @change="groupDragHandler"
             >
                 <group-item 
                     v-for="(item, index) in tableData" 
                     :key="index"
                     :data="item"
                     @reload="queryData"
+                    @taskdrag="taskDragHandler"
                 ></group-item>
             </draggable>
         </div>
@@ -36,6 +37,8 @@ export default {
     data() {
         return {
             tableData: [],
+
+            taskUpdateLock: false,
         }
     },
     methods: {
@@ -46,7 +49,7 @@ export default {
                 this.tableData = data;
             });
         },
-        dragEndHandler() {
+        groupDragHandler() {
             this.$post('/taskgroup/updateorder', this.tableData.map((item, index) => {
                 return {
                     _id: item._id,
@@ -54,6 +57,24 @@ export default {
                 };
             }), () => {
 
+            }, true);
+        },
+        taskDragHandler() {
+            if (this.taskUpdateLock) {
+                return;
+            }
+
+            this.taskUpdateLock = true;
+
+            this.tableData.forEach(group => {
+                group.task.forEach((item, index) => {
+                    item.order = index;
+                    item.groupcode = group._id;
+                });
+            });
+            
+            this.$post('/task/updatedrag', this.tableData, () => {
+                this.taskUpdateLock = false;
             }, true);
         },
     },
