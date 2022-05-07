@@ -50,7 +50,11 @@ router.get('/list', function (req, res, next) {
         taskRepWithMemberData;
 
     new Chain().link(next => {
-        TaskReport.find(search, (err, data) => {
+        TaskReport.find(search, null, {
+            sort: {
+                reporttime: -1,
+            },
+        }, (err, data) => {
             if (err) {
                 tdata = resFrame('error', '', err);
                 res.send(tdata);

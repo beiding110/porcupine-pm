@@ -25,7 +25,6 @@ export default {
                 "textStyle": {},
                 "title": {
                     "textStyle": {
-                        "color": ""
                     },
                     "subtextStyle": {
                         "color": "#aaa"
