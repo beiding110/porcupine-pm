@@ -1,6 +1,5 @@
 const mongoose = require('../index.js');
-
-const resFrame = require('../../utils/resFrame');
+const Chain = require('../../utils/Chain');
 
 var Schema = mongoose.Schema;
 
@@ -36,6 +35,42 @@ let data = {
 
 var dataSchema = Schema(data);
 
+dataSchema.statics.getList = function(search, cb) {
+    var search = {
+        scbj: {
+            $ne: 1,
+        },
+        ...search,
+    };
+
+    new Chain().link(next => {
+        this.find(search, (err, data) => {
+            if (err) {
+                cb(err);
+                return false;
+            }
+
+            taskData = data;
+    
+            next()
+        });
+    }).link(next => {
+        this.populate(taskData, {
+            path: 'member',
+        }, (err, data) => {
+            if (err) {
+                cb(err);
+            }
+
+            taskWithMemberData = data;
+
+            next();
+        });
+    }).link(next => {
+        cb(null, taskWithMemberData);
+    }).run();
+};
+
 dataSchema.statics.delRows = function(rows, cb) {
     this.updateMany({
         _id: {
@@ -45,8 +80,8 @@ dataSchema.statics.delRows = function(rows, cb) {
         scbj: 1,
     }, (err, data) => {
         if (err) {
-            tdata = resFrame('error', '', err);
-            res.send(tdata);
+            cb(err);
+
             return false;
         }
 
@@ -68,6 +103,7 @@ dataSchema.statics.updateDrag = function(groupArr, cb) {
                         update: {
                             order: item.order,
                             groupcode: item.groupcode,
+                            state: item.state,
                         },
                     },
                 };

@@ -44,6 +44,10 @@ export default {
                     path: `/teamwork/${this.$route.params.procode}/task/index`,
                 },
                 {
+                    title: '状态组',
+                    path: `/teamwork/${this.$route.params.procode}/task/state`,
+                },
+                {
                     title: '工时',
                     path: `/teamwork/${this.$route.params.procode}/taskreport/list`,
                 },
@@ -78,7 +82,7 @@ export default {
             .bread{
                 display: flex;
                 align-items: center;
-                justify-content: center;
+                width: 300px;
             }
 
             .navs{

@@ -6,6 +6,7 @@
         >
             <div class="left">
                 <el-tooltip 
+                v-if="!state"
                 :content="data.title" 
                 placement="top"
                 >
@@ -14,7 +15,15 @@
                     </div>
                 </el-tooltip>
 
+                <div 
+                v-else
+                class="title"
+                >
+                    {{stateTitle}}
+                </div>
+
                 <el-tooltip 
+                v-if="!state"
                 :content="dataContent" 
                 placement="top"
                 >
@@ -35,7 +44,10 @@
                 </el-tooltip>
             </div>
 
-            <div class="dropdown">
+            <div 
+            v-if="!state"
+            class="dropdown"
+            >
                 <dropdown-menu 
                     :data="dropDown"
                 ></dropdown-menu>
@@ -57,7 +69,10 @@
             </draggable>
         </div>
 
-        <div class="foot">
+        <div 
+        v-if="!state"
+        class="foot"
+        >
             <task-add
                 :groupcode="data._id"
                 @reload="$emit('reload')"
@@ -72,6 +87,8 @@ import Card from './card';
 import TaskItem from './task-item';
 import TaskAdd from './task-add';
 import Draggable from 'vuedraggable';
+
+import STATE_CONFIG from '../config/state';
 
 export default {
     components: {
@@ -104,34 +121,12 @@ export default {
                 //             },
                 //         ]
                 //     },
-                //     {
-                //         title: '任务2',
-                //         state: 0,
-                //         starttime: '2022/4/28',
-                //         endtime: '2022/4/29',
-                //         duration: 8,
-                //         level: 'h',
-                //         people: [
-                //             {
-                //                 name: 'yzh'
-                //             },
-                //         ]
-                //     },
-                //     {
-                //         title: '任务3',
-                //         state: 0,
-                //         starttime: '2022/4/28',
-                //         endtime: '2022/4/29',
-                //         duration: 8,
-                //         level: 'h',
-                //         people: [
-                //             {
-                //                 name: 'yzh'
-                //             },
-                //         ]
-                //     },
                 // ],
             }),
+        },
+        state: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
@@ -169,6 +164,9 @@ export default {
                 this.data.task.filter(item => item.state === '2').length,
                 this.data.task.filter(item => item.state === '3').length,
             ]
+        },
+        stateTitle() {
+            return STATE_CONFIG[this.data.state].text;
         },
     },
     methods: {

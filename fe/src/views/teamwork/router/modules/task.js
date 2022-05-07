@@ -7,7 +7,14 @@ export default {
             path: 'index',
             component: () => import(/*webpackChunkName: 'pc-tw-task'*/ '@views/teamwork/task/index'),
             meta: {
-                title: '任务管理',
+                title: '任务组',
+            }
+        },
+        {
+            path: 'state',
+            component: () => import(/*webpackChunkName: 'pc-tw-task'*/ '@views/teamwork/task/state'),
+            meta: {
+                title: '任务状态',
             }
         },
     ]

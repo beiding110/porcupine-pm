@@ -7,7 +7,6 @@ const Chain = require('../utils/Chain');
 
 const Task = require('../db/schema/task');
 const TaskGroup = require('../db/schema/task-group');
-const mongoose = require('mongoose');
 
 router.get('/list', function (req, res, next) {
     const {title, procode, groupcode} = req.query,
@@ -53,6 +52,71 @@ router.get('/list', function (req, res, next) {
         tdata = resFrame(data);
         res.send(tdata);
     });
+});
+
+router.get('/list-state', function (req, res, next) {
+    const {procode} = req.query,
+        {ppm_userid} = req.cookies;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    var taskData;
+
+    new Chain().link(next => {
+        Task.getList({
+            procode,
+        }, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            taskData = data;
+    
+            next();
+        });
+    }).link(next => {
+        var tasks = taskData,
+            statsArr = [{state: '0', task: []}, {state: '1', task: []}, {state: '2', task: []}, {state: '3', task: []}];
+
+        var regroup = tasks.reduce((arr, item) => {
+            var state = item.state,
+                stateIndexInArr;
+
+            if (arr.some((arrItem, arrIndex) => {
+                if (arrItem.state === state) {
+                    stateIndexInArr = arrIndex;
+                    return true;
+                }
+
+                return false;
+            })) {
+                // 有对应状态分组
+
+                arr[stateIndexInArr].task.push(item);
+            } else {
+                // 没有对应状态分组
+
+                arr.push({
+                    state,
+                    task: [item],
+                });
+            }
+
+            return arr;
+        }, statsArr);
+
+        tdata = resFrame(regroup);
+        res.send(tdata);
+    }).run();
 });
 
 router.post('/form', function (req, res, next) {
