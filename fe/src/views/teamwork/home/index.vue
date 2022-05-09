@@ -1,10 +1,10 @@
 <template>
     <div class="home">
-        <el-card>
+        <el-card class="com-item">
             <cascader-all-member></cascader-all-member>
         </el-card>
 
-        <hotspot-map></hotspot-map>
+        <hotspot-map class="com-item"></hotspot-map>
     </div>
 </template>
 
@@ -29,5 +29,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    .home{
+        margin: -10px;
 
+        .com-item{
+            margin: 10px;
+        }
+    }
 </style>

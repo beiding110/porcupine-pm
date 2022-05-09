@@ -17,6 +17,25 @@ let data = {
 };
 
 var dataSchema = Schema(data);
+
+dataSchema.statics.getUsersPro = function(userid, cb) {
+    var search = {
+        scbj: {
+            $ne: 1,
+        },
+        adduser: userid,
+    };
+
+    this.find(search, (err, data) => {
+        if (err) {
+            cb(err);
+            return false;
+        }
+
+        cb(null, data);
+    });
+};
+
 var Data = mongoose.model('project', dataSchema);
 
 module.exports = Data;

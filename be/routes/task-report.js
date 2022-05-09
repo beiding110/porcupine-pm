@@ -5,6 +5,7 @@ const resFrame = require('../utils/resFrame');
 const app = require('../utils/app');
 
 const TaskReport = require('../db/schema/task-report');
+const Project = require('../db/schema/project');
 const Chain = require('../utils/Chain');
 
 router.get('/list', function (req, res, next) {
@@ -37,8 +38,8 @@ router.get('/list', function (req, res, next) {
 
     if (starttime && endtime) {
         search.reporttime = {
-            $gte: starttime,
-            $lt: endtime,
+            $gt: starttime,
+            $lte: endtime,
         };
     }
 
@@ -203,6 +204,89 @@ router.get('/detail', function (req, res, next) {
     }).link(next => {
         tdata = resFrame(taskReportData);
         res.send(tdata);
+    }).run();
+});
+
+router.get('/hotmap', function (req, res, next) {
+    const {starttime, endtime} = req.query,
+        {ppm_userid} = req.cookies;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    var projectData,
+        reportData;
+
+    new Chain().link(next => {
+        Project.getUsersPro(ppm_userid, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            projectData = data;
+    
+            next();
+        });
+    }).link(next => {
+        function whereFac() {
+            var start = new Date(starttime).getTime(),
+                end = new Date(endtime).getTime();
+
+            return `new Date(this['reporttime']).getTime() > ${start} && new Date(this['reporttime']).getTime() <= ${end}`;
+        }
+            
+        TaskReport.find({
+            procode: {
+                $in: projectData.map(item => item._id),
+            },
+            $where: whereFac(),
+        }, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+
+            next();
+        });
+    }).link(next => {
+        TaskReport.populate(reportData, [
+            {
+                path: 'member',
+            },
+            {
+                path: 'procode',
+            },
+        ], (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+
+            next();
+        });
+    }).link(next => {
+        var rebuild;
+        
+        TaskReport.buildByProject(reportData, data => {
+            rebuild = data;
+
+            tdata = resFrame(rebuild);
+            res.send(tdata);
+        });
     }).run();
 });
 
