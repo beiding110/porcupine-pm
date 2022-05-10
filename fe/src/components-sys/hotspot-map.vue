@@ -208,7 +208,7 @@ export default {
 
             var arr = [];
 
-            for (var i = 0; i < length; i ++) {
+            for (var i = 0; i <= length; i ++) {
                 arr.push(this.calcDateInfo(start, i));
             }
 
