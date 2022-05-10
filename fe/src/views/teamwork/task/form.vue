@@ -5,9 +5,7 @@
     table
     send-str
     submit-url="/task/form"
-    detail-url="/task/detail"
     @cancle="cancleHandler"
-    :detail-extra="detailExtra"
     >
         <el-form-item 
         label="所属分组" 
@@ -163,11 +161,26 @@ export default {
                 this.memberData = data;
             });
         },
+        queryDetail() {
+            if (!this.data._id) {
+                return;
+            }
+
+            this.$get('/task/detail', this.detailExtra, data => {
+                var form = data;
+
+                form.member = form.member.map(item => item._id);
+
+                this.form = form;
+            });
+        },
     },
     created() {
         this.queryGroupData();
 
         this.queryProMember();
+
+        this.queryDetail();
     },
 }
 </script>
