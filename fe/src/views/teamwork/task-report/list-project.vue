@@ -1,6 +1,15 @@
 <template>
     <div>
         <el-row :gutter="10" class="row">
+            <el-card>
+                <hotspot-map
+                    :data="hmData"
+                    :range="hmRange"
+                ></hotspot-map>
+            </el-card>
+        </el-row>
+
+        <el-row :gutter="10" class="row">
             <el-col :span="12">
                 <el-card>
                     <my-search 
@@ -91,6 +100,7 @@ import LIST_MIXIN from '@mixins/list-page';
 import DIALOG_LIST_MIXIN from '@mixins/dialog-list-page';
 
 import TuiCalendar from '@components-sys/tui-calendar';
+import HotspotMap from '@components-sys/hotspot-map';
 
 import FormPage from './form';
 import Echarts from '../../../components/echarts';
@@ -103,6 +113,7 @@ export default {
     components: {
         FormPage,
         TuiCalendar,
+        HotspotMap,
         Echarts,
     },
     data() {
@@ -113,6 +124,9 @@ export default {
 
             ecData_byTime: {},
             ecData_byMember: {},
+
+            hmData: [],
+            hmRange: [],
         }
     },
     methods: {
@@ -130,9 +144,19 @@ export default {
         reloadHandler() {
             this.queryData();
         },
+        queryHmData() {
+            this.$get('/taskreport/hotmapbyproject', {
+                procode: this.$route.params.procode,
+            }, data => {
+                this.hmData = data.data;
+                this.hmRange = data.range;
+            });
+        },
     },
     created() {
         this.queryData();
+
+        this.queryHmData();
     },
 };
 </script>

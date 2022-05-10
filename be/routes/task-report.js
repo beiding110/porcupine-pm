@@ -307,4 +307,73 @@ router.get('/hotmap', function (req, res, next) {
     }).run();
 });
 
+router.get('/hotmapbyproject', function (req, res, next) {
+    const {procode} = req.query,
+        {ppm_userid} = req.cookies;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    var reportData;
+
+    new Chain().link(next => {            
+        TaskReport.find({
+            procode: procode,
+        }, null, {
+            sort: {
+                reporttime: 1,
+            },
+        }, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+
+            next();
+        });
+    }).link(next => {
+        TaskReport.populate(reportData, [
+            {
+                path: 'member',
+            },
+            {
+                path: 'procode',
+            },
+        ], (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+
+            next();
+        });
+    }).link(next => {
+        var rebuild,
+            rangeStart = (reportData[0] || {}).reporttime,
+            rangeEnd = (reportData[reportData.length - 1] || {}).reporttime;
+        
+        TaskReport.buildByProject(reportData, data => {
+            rebuild = data;
+
+            tdata = resFrame({
+                data: rebuild,
+                range: [rangeStart, rangeEnd],
+            });
+            res.send(tdata);
+        });
+    }).run();
+});
+
 module.exports = router;
