@@ -115,6 +115,11 @@ export default {
                 taskcode: this.data.taskcode,
             }, data => {
                 this.memberData = data;
+
+                if (!this.data._id) {
+                    // 新增
+                    this.form.member = data.map(item => item._id);
+                }
             });
         },
     },
