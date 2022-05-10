@@ -179,8 +179,8 @@ dataSchema.statics.buildByProject = function(arr, cb) {
                 } else {
                     // 数组里存在这天的记录
 
-                    report[reportIndex].tasktime += item.tasktime;
-                    report[reportIndex].reporttimes ++;
+                    report[existDateIndex].tasktime += item.tasktime;
+                    report[existDateIndex].reporttimes ++;
                 }
             }
         }
