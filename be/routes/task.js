@@ -154,7 +154,7 @@ router.post('/form', function (req, res, next) {
                 next();
             });
         }).link(next => {
-            if (taskDataInDB.groupcode !== form.groupcode) {
+            if (taskDataInDB.groupcode.toString() !== form.groupcode) {
                 // 分组发生了变化
 
                 // 移除旧分组中的task索引

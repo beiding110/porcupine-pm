@@ -61,12 +61,12 @@ router.get('/list', function (req, res, next) {
     }).link(next => {
         TaskGroup.populate(groupData, {
             path: 'task',
+            options: {
+                order: 1,
+                addtime: 1,
+            },
             populate: {
                 path: 'member',
-                options: {
-                    order: 1,
-                    addtime: 1,
-                },
             },
         }, (err, data) => {
             if (err) {
