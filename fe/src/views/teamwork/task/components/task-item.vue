@@ -232,6 +232,7 @@ export default {
 
             .state{
                 flex: 1;
+                margin-right: 10px;
             }
         }
 
