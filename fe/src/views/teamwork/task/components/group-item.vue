@@ -293,7 +293,7 @@ export default {
         }
 
         & > .body{
-            max-height: calc(100% - 110px);
+            max-height: calc(100% - 120px);
             overflow-y: auto;
         }
 
