@@ -54,7 +54,7 @@
             </div>
         </card>
 
-        <div class="body" :class="{empty: !data.task || !data.task.length}">
+        <div class="body state" :class="{empty: !data.task || !data.task.length}">
             <draggable 
             v-model="data.task" 
             group="tasks"
@@ -295,6 +295,10 @@ export default {
         & > .body{
             max-height: calc(100% - 120px);
             overflow-y: auto;
+
+            &.state{
+                max-height: calc(100% - 60px);
+            }
         }
 
         & > .foot{
