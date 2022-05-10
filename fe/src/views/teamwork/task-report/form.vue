@@ -43,6 +43,7 @@
                 v-model="form.member" 
                 :data="memberData"
                 :props="{label:'name', value:'_id'}"
+                :multiple="!data._id"
             ></my-select>
         </el-form-item>
 
@@ -75,22 +76,26 @@ export default {
             default: () => ({}),
         },
     },
-    data: () => ({
-        form: {
-            reporttime: '',
-            tasktime: 0,
-            member: '',
-            detail: '',
+    data() {
+        var member = this.data._id ? '' : [];
 
-            adduser: '',
-            addtime: '',
+        return {
+            form: {
+                reporttime: '',
+                tasktime: 0,
+                member,
+                detail: '',
 
-            procode: '',
-            taskcode: '',
-        },
+                adduser: '',
+                addtime: '',
 
-        memberData: [],
-    }),
+                procode: '',
+                taskcode: '',
+            },
+
+            memberData: [],
+        };
+    },
     computed: {
         detailExtra() {
             return {

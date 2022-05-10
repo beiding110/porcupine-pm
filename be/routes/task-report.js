@@ -160,8 +160,25 @@ router.post('/form', function (req, res, next) {
         form.adduser = ppm_userid;
         form.addtime = app.getTime();
 
-        // 存储项目信息
-        TaskReport.create(form, (err, data) => {
+        var member = form.member,
+            createData;
+
+        if (typeof member === 'string') {
+            createData = form
+        } else if (typeof member === 'object') {
+            var createData = member.map(item => {
+                return {
+                    ...form,
+                    member: item,
+                };
+            });
+        } else {
+            tdata = resFrame('error', '', '错误的member格式');
+            res.send(tdata);
+            return false;
+        }
+
+        TaskReport.create(createData, (err, data) => {
             if (err) {
                 tdata = resFrame('error', '', err);
                 res.send(tdata);
