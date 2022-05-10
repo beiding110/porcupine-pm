@@ -86,9 +86,14 @@ dataSchema.statics.getList = function(search, cb) {
             next()
         });
     }).link(next => {
-        this.populate(taskData, {
-            path: 'member',
-        }, (err, data) => {
+        this.populate(taskData, [
+            {
+                path: 'member',
+            },
+            {
+                path: 'procode',
+            },
+        ], (err, data) => {
             if (err) {
                 cb(err);
             }

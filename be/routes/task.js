@@ -7,6 +7,7 @@ const Chain = require('../utils/Chain');
 
 const Task = require('../db/schema/task');
 const TaskGroup = require('../db/schema/task-group');
+const Project = require('../db/schema/project');
 
 router.get('/list', function (req, res, next) {
     const {title, procode, groupcode} = req.query,
@@ -70,19 +71,47 @@ router.get('/list-state', function (req, res, next) {
     var taskData;
 
     new Chain().link(next => {
-        Task.getList({
-            procode,
-        }, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
+        if (!procode) {
+            // 没有procode，按人查
+            Project.getUsersPro(ppm_userid, (err, data) => {
+                if (err) {
+                    tdata = resFrame('error', '', err);
+                    res.send(tdata);
+                    return false;
+                }
 
-            taskData = data;
+                Task.getList({
+                    procode: {
+                        $in: data.map(item => item._id),
+                    },
+                }, (err, data) => {
+                    if (err) {
+                        tdata = resFrame('error', '', err);
+                        res.send(tdata);
+                        return false;
+                    }
+        
+                    taskData = data;
+        
+                    next();
+                });
+            });
+        } else {
+            // 有procode，按项目查
+            Task.getList({
+                procode,
+            }, (err, data) => {
+                if (err) {
+                    tdata = resFrame('error', '', err);
+                    res.send(tdata);
+                    return false;
+                }
     
-            next();
-        });
+                taskData = data;
+        
+                next();
+            });
+        }
     }).link(next => {
         var tasks = taskData,
             statsArr = [{state: '0', task: []}, {state: '1', task: []}, {state: '2', task: []}, {state: '3', task: []}];
