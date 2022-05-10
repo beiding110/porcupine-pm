@@ -30,7 +30,7 @@
                     <tr 
                     class="row"
                     v-for="(memberItem, memberIndex) in proItem.member"
-                    :key="`${memberItem.id}-${memberIndex}`"
+                    :key="`info-row-${proItem.id}-${memberItem.id}`"
                     >
                         <td 
                         v-if="memberIndex === 0"
@@ -59,6 +59,8 @@
                     </tr>
                 </template>
             </table>
+
+            <div class="empty" v-if="!data.length">空</div>
         </div>
 
         <div class="body">
@@ -68,7 +70,7 @@
                         <template v-for="(item, index) in dayRange">
                             <col 
                                 width="20"
-                                :key="item.date" 
+                                :key="`col-${item.date}`" 
                                 :name="item.date"
                             />
                         </template>
@@ -78,7 +80,7 @@
                             <template v-for="(item, index) in dayRange">
                                 <td 
                                 v-if="item.ycolindex === 0"
-                                :key="item.date" 
+                                :key="`year-${item.date}`" 
                                 class="year cell"
                                 :class="item.y"
                                 :colspan="item.ycolnum"
@@ -91,7 +93,7 @@
                             <template v-for="(item, index) in dayRange">
                                 <td 
                                 v-if="item.mcolindex === 0"
-                                :key="item.date" 
+                                :key="`month-${item.date}`" 
                                 class="month cell" 
                                 :class="item.m"
                                 :colspan="item.mcolnum"
@@ -104,7 +106,7 @@
                         <tr class="row day">
                             <template v-for="(item, index) in dayRange">
                                 <td 
-                                :key="item.date" 
+                                :key="`day-${item.date}`" 
                                 class="date cell"
                                 :class="[item.date, ~[0,6].indexOf(item.day) ? 'weekend' : 'workday', item.today ? 'today' : '']"
                                 >
@@ -121,25 +123,24 @@
                             >
                                 <tr 
                                 class="row hot"
-                                :key="`${proItem.id}-${memberIndex}`"
+                                :key="`hot-row-${proItem.id}-${memberIndex}`"
                                 >
                                     <template v-for="(item, index) in dayRange">
                                         <td 
-                                        :key="item.date" 
-                                        class="cell"
-                                        :class="[item.date, item.today ? 'today' : '']"
-                                        :style="calcHotPoint(memberItem, item)"
-                                        >
-                                            
-                                        </td>
+                                            :key="`hot-cell-${proItem.id}-${memberIndex}-${item.date}`" 
+                                            class="cell"
+                                            :class="[item.date, item.today ? 'today' : '']"
+                                            :style="calcHotPoint(memberItem, item)"
+                                        ></td>
                                     </template>
                                 </tr>
                             </template>
                         </template>
                     </tbody>
                 </table>
-                
             </div>
+
+            <div class="empty" v-if="!data.length">空</div>
         </div>
     </div>
 </template>
@@ -350,9 +351,19 @@ export default {
         position: relative;
         display: flex;
         border: 1px solid #DCDFE6;
+        min-height: 120px;
 
-        .head{
+        .empty{
+            position: absolute;
+            left: 50%;
+            top: calc(50% + 30px);
+            transform: translate(-50%, -50%);
+            color: $infoColor;
+            cursor: default;
+        }
 
+        .head, .body{
+            position: relative;
         }
 
         .body{

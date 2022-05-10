@@ -12,6 +12,16 @@
                         @change="queryData"
                     ></el-date-picker>
                 </el-form-item>
+
+                <el-form-item>
+                    <my-select 
+                        placeholder="成员"
+                        v-model="member" 
+                        :props="{label:'name', value:'_id'}"
+                        :url="`/projectmember/list`"
+                        @select="queryData"
+                    ></my-select>
+                </el-form-item>
             </el-form>
         </div>
 
@@ -45,7 +55,8 @@ export default {
         return {
             data: [],
 
-            dateRange: [firstOfYear, lastDayOfYear]
+            dateRange: [firstOfYear, lastDayOfYear],
+            member: '',
         };
     },
     methods: {
@@ -53,6 +64,7 @@ export default {
             this.$get('/taskreport/hotmap', {
                 starttime: this.dateRange[0],
                 endtime: this.dateRange[1],
+                member: this.member,
             }, data => {
                 this.data = data;
             });

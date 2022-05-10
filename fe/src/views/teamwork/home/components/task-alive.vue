@@ -63,7 +63,11 @@ export default {
     },
     data() {
         return {
-            tableData: [],
+            tableData: [
+                {state: '0', task: [],},
+                {state: '1', task: [],},
+                {state: '2', task: [],},
+            ],
         }
     },
     methods: {

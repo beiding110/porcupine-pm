@@ -39,7 +39,7 @@ export default {
 
                 dispatch('getMenu');
 
-                router.replace('/teamwork/project/list');
+                router.replace('/teamwork/index');
             });
         },
         queryUserInfo({state, dispatch}, requery) {

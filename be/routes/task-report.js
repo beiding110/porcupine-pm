@@ -225,7 +225,7 @@ router.get('/detail', function (req, res, next) {
 });
 
 router.get('/hotmap', function (req, res, next) {
-    const {starttime, endtime} = req.query,
+    const {starttime, endtime, member} = req.query,
         {ppm_userid} = req.cookies;
 
     // 未登录
@@ -259,13 +259,19 @@ router.get('/hotmap', function (req, res, next) {
 
             return `new Date(this['reporttime']).getTime() > ${start} && new Date(this['reporttime']).getTime() <= ${end}`;
         }
-            
-        TaskReport.find({
+
+        var search = {
             procode: {
                 $in: projectData.map(item => item._id),
             },
             $where: whereFac(),
-        }, (err, data) => {
+        };
+
+        if (member) {
+            search.member = member;
+        }
+            
+        TaskReport.find(search, (err, data) => {
             if (err) {
                 tdata = resFrame('error', '', err);
                 res.send(tdata);
