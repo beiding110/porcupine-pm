@@ -105,16 +105,16 @@ export default {
 
             send();
         },
-        queryProMember() {
-            this.$get('/projectmember/list', {
-                procode: this.$route.params.procode,
+        queryTaskMember() {
+            this.$get('/task/member', {
+                taskcode: this.data.taskcode,
             }, data => {
                 this.memberData = data;
             });
         },
     },
     created() {
-        this.queryProMember();
+        this.queryTaskMember();
     },
 }
 </script>

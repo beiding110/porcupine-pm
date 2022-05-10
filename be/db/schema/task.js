@@ -35,6 +35,37 @@ let data = {
 
 var dataSchema = Schema(data);
 
+dataSchema.statics.getRow = function(taskcode, cb) {
+    var taskData,
+        taskWithMemberData;
+
+    new Chain().link(next => {
+        this.findById(taskcode, (err, data) => {
+            if (err) {
+                cb && cb(err);
+                return;
+            }
+
+            taskData = data;
+    
+            next();
+        });
+    }).link(next => {
+        this.populate(taskData, 'member', (err, data) => {
+            if (err) {
+                cb && cb(err);
+                return;
+            }
+
+            taskWithMemberData = data;
+
+            next();
+        });
+    }).link(next => {
+        cb && cb(null, taskWithMemberData);
+    }).run();
+}
+
 dataSchema.statics.getList = function(search, cb) {
     var search = {
         scbj: {

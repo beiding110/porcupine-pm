@@ -258,11 +258,10 @@ router.get('/detail', function (req, res, next) {
         return false;
     }
 
-    var taskData,
-        taskWithMemberData;
+    var taskData;
 
     new Chain().link(next => {
-        Task.findById(taskcode, (err, data) => {
+        Task.getRow(taskcode, (err, data) => {
             if (err) {
                 tdata = resFrame('error', '', err);
                 res.send(tdata);
@@ -274,19 +273,7 @@ router.get('/detail', function (req, res, next) {
             next();
         });
     }).link(next => {
-        Task.populate(taskData, 'member', (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            taskWithMemberData = data;
-
-            next();
-        });
-    }).link(next => {
-        tdata = resFrame(taskWithMemberData);
+        tdata = resFrame(taskData);
         res.send(tdata);
     }).run();
 });
@@ -404,6 +391,39 @@ router.post('/updatedrag', function (req, res, next) {
             tdata = resFrame(data);
             res.send(tdata);
         });
+    }).run();
+});
+
+router.get('/member', function (req, res, next) {
+    const {taskcode} = req.query,
+        {ppm_userid} = req.cookies;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    var taskData;
+
+    new Chain().link(next => {
+        Task.getRow(taskcode, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            taskData = data;
+    
+            next();
+        });
+    }).link(next => {
+        tdata = resFrame(taskData.member);
+        res.send(tdata);
     }).run();
 });
 
