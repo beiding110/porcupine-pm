@@ -607,4 +607,60 @@ router.post('/file', function (req, res, next) {
     }).run();
 });
 
+// 获取时间轴数据
+router.get('/timeline', function (req, res, next) {
+    const {procode} = req.query,
+        {ppm_userid} = req.cookies;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+    
+    var taskData,
+        groupData;
+
+    new Chain().link(next => {
+
+        Task.getList({
+            procode,
+            $where: `this.state !== '4' && this.starttime`,
+        }, {}, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            taskData = data;
+    
+            next();
+        });
+    }).link(next => {
+        TaskGroup.find({
+            procode
+        }, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            groupData = data;
+
+            next();
+        });
+    }).link(next => {
+        tdata = resFrame({
+            data: taskData,
+            group: groupData,
+        });
+        res.send(tdata);
+    }).run();
+});
+
 module.exports = router;

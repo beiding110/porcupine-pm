@@ -51,6 +51,10 @@ export default {
                     title: '工时',
                     path: `/teamwork/${this.$route.params.procode}/taskreport/list`,
                 },
+                {
+                    title: '时间轴',
+                    path: `/teamwork/${this.$route.params.procode}/task/timeline`,
+                },
             ];
         }
     },

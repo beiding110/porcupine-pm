@@ -17,5 +17,12 @@ export default {
                 title: '任务状态',
             }
         },
+        {
+            path: 'timeline',
+            component: () => import(/*webpackChunkName: 'pc-tw-task'*/ '@views/teamwork/task/time-line'),
+            meta: {
+                title: '时间轴',
+            }
+        },
     ]
 }
