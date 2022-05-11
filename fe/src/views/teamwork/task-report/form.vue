@@ -77,11 +77,12 @@ export default {
         },
     },
     data() {
-        var member = this.data._id ? '' : [];
+        var member = this.data._id ? '' : [],
+            reporttime = new Date().pattern('yyyy-MM-dd');
 
         return {
             form: {
-                reporttime: '',
+                reporttime,
                 tasktime: 0,
                 member,
                 detail: '',

@@ -135,7 +135,8 @@ export default {
             .vis-current-time{background-color: red; z-index:2;}
 
             .vis-item{
-                background-color: inherit; border: 1px solid rgba(0,0,0,0);
+                background-color: $primaryColor1; 
+                border: 1px solid $primaryColor;
                 
                 .vis-item-overflow{
                     background-color: $primaryColor; 

@@ -4,7 +4,7 @@
     @click="goto(`/teamwork/${data._id}/task`)"
     @contextmenu.prevent="contextMenuHandler"
     >
-        <div class="cover" :style="{background:`#${themeColor}`}">
+        <div class="cover" :style="{background:`${themeColor}`}">
             {{coverText}}
         </div>
         <div class="footer">
@@ -68,7 +68,12 @@ export default {
             return this.data.proname.slice(0, 1);
         },
         themeColor() {
-            return this.data._id.slice(-7, -1);
+            if (this.data.covercolor) {
+                return this.data.covercolor;
+            }
+
+            var id = this.data._id
+            return `#${id.slice(5, 9)}${id.slice(-2, id.length)}`;
         },
     },
     methods: {

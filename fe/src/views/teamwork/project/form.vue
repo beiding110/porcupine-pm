@@ -38,6 +38,14 @@
         >
             <people-editor v-model="form.member"></people-editor>
         </el-form-item>
+
+        <el-form-item 
+        class="table-full-row"
+        label="封面主题色" 
+        prop="covercolor" 
+        >
+            <el-color-picker v-model="form.covercolor"></el-color-picker>
+        </el-form-item>
     </my-form>
 </template>
 
@@ -63,6 +71,7 @@ export default {
             proname: '',
             detail: '',
             member: [],
+            covercolor: '',
         }
     }),
     computed: {

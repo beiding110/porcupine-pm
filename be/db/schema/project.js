@@ -8,6 +8,7 @@ let data = {
     adduser: String,
     addtime: String,
     scbj: Number,
+    covercolor: String,
     member: [
         {
             type: Schema.Types.ObjectId,
