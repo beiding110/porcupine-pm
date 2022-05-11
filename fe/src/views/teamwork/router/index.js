@@ -2,6 +2,7 @@ import project from './modules/project';
 import task from './modules/task';
 import taskReport from './modules/task-report';
 import home from './modules/home';
+import file from './modules/file';
 
 export default {
     path: 'teamwork',
@@ -11,5 +12,6 @@ export default {
         task,
         taskReport,
         home,
+        file,
     ]
 }

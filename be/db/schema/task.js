@@ -31,6 +31,8 @@ let data = {
     adduser: String,
     addtime: String,
     scbj: Number,
+
+    filetime: String,
 };
 
 var dataSchema = Schema(data);
@@ -66,7 +68,7 @@ dataSchema.statics.getRow = function(taskcode, cb) {
     }).run();
 }
 
-dataSchema.statics.getList = function(search, cb) {
+dataSchema.statics.getList = function(search, sort, cb) {
     var search = {
         scbj: {
             $ne: 1,
@@ -75,7 +77,9 @@ dataSchema.statics.getList = function(search, cb) {
     };
 
     new Chain().link(next => {
-        this.find(search, (err, data) => {
+        this.find(search, null, {
+            sort,
+        }, (err, data) => {
             if (err) {
                 cb(err);
                 return false;

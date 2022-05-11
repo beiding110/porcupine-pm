@@ -1,0 +1,35 @@
+<template>
+    <el-tag 
+    :type="mapItem.type"
+    size="small"
+    >
+        <i 
+            v-if="mapItem.icon"
+            :class="mapItem.icon"
+        ></i>
+        {{mapItem.text}}
+    </el-tag>
+</template>
+
+<script>
+import CONFIG from '../config/level';
+
+export default {
+    props: {
+        data: {
+            type: [Number, String],
+            default: 0,
+        },
+    },
+    data() {
+        return {
+            config: CONFIG,
+        }
+    },
+    computed: {
+        mapItem() {
+            return this.config[this.data];
+        },
+    },
+}
+</script>

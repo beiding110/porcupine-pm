@@ -171,12 +171,24 @@ export default {
     },
     methods: {
         contextMenuHandler(event) {
+            if (this.state) {
+                return;
+            }
+
             this.$contextmenu({
                 items: [
                     {
                         label: '重命名',
                         onClick: () => {
                             this.editHandler();
+                        },
+                    },
+                    {
+                        label: '归档已完成的',
+                        onClick: () => {
+                            showConfirm('归档后，该任务在项目中不可操作', '', () => {
+                                this.fileHandler();
+                            });
                         },
                         divided: true,
                     },
@@ -227,6 +239,16 @@ export default {
         },
         dragEndHandler() {
             this.$emit('taskdrag');
+        },
+        // 批量归档
+        fileHandler() {
+            var tasks = this.data.task.filter(item => item.state === '3');
+
+            this.$post('/task/file', tasks, () => {
+                showMsg('任务状态更新成功');
+
+                this.$emit('reload');
+            }, true);
         },
     },
 }

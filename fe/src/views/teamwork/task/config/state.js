@@ -19,4 +19,10 @@ export default {
         type: 'success',
         icon: 'el-icon-success'
     },
+    4: {
+        text: '已归档',
+        type: 'success',
+        icon: 'el-icon-document',
+        show: false,
+    },
 }

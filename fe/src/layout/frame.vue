@@ -49,7 +49,12 @@ export default {
                     path: '/teamwork/project',
                     icon: 'el-icon-s-management',
                 },
-            ]
+                {
+                    title: '归档数据',
+                    path: '/teamwork/file',
+                    icon: 'el-icon-document',
+                },
+            ],
         }
     },
     computed: {

@@ -138,6 +138,73 @@ dataSchema.statics.updateTaskId = function(arr, cb) {
     });
 };
 
+// 批量更新group中的task关联关系
+dataSchema.statics.updateTask = function(taskArrWithGroupCode, cb) { 
+    // [{groupcode, _id}] = taskArrWithGroupCode;
+
+    var groupData;
+    
+    new Chain().link(next => {
+        this.find({
+            _id: {
+                $in: taskArrWithGroupCode.map(item => item.groupcode),
+            }
+        }, (err, data) => {
+            if (err) {
+                cb(err);
+                return false;
+            }
+
+            groupData = data;
+    
+            next()
+        });
+    }).link(next => {
+        taskArrWithGroupCode.forEach(taskItem => {
+            let taskId = taskItem._id;
+
+            groupData.forEach(group => {
+                let {task, id} = group;
+
+                if (id === taskItem.groupcode) {
+                    var existIndex;
+
+                    if (existIndex = task.indexOf(taskId), ~existIndex) {
+                        task.splice(existIndex, 1);
+                    } else {
+                        task.push(existIndex);
+                    }
+                }
+            });
+        });
+
+        next();
+    }).link(next => {
+
+        var bulkWriteSearch = groupData.map(item => {
+            return {
+                updateOne: {
+                    filter: {
+                        _id: item.id,
+                    },
+                    update: {
+                        task: item.task,
+                    },
+                },
+            };
+        });
+
+        this.bulkWrite(bulkWriteSearch, (err, data) => {
+            if (err) {
+                cb(err);
+                return false;
+            }
+    
+            cb(null, data);
+        });
+    }).run();
+};
+
 var Data = mongoose.model('task-group', dataSchema);
 
 module.exports = Data;

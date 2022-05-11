@@ -149,6 +149,10 @@ export default {
                         children: Object.keys(CONFIG_STATE).reduce((arr, key) => {
                             var item = CONFIG_STATE[key];
 
+                            if (item.show === false) {
+                                return arr;
+                            }
+
                             arr.push({
                                 label: item.text,
                                 icon: item.icon,
@@ -159,6 +163,14 @@ export default {
 
                             return arr;
                         }, []),
+                    },
+                    {
+                        label: '归档',
+                        onClick: () => {
+                            showConfirm('归档后，该任务在项目中不可操作', '', () => {
+                                this.fileHandler();
+                            });
+                        },
                         divided: true,
                     },
                     {
@@ -194,6 +206,14 @@ export default {
         },
         reloadHandler() {
             this.$emit('reload');
+        },
+        // 归档
+        fileHandler() {
+            this.$post('/task/file', [this.data], () => {
+                showMsg('任务状态更新成功');
+
+                this.reloadHandler();
+            }, true);
         },
     },
 };

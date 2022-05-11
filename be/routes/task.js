@@ -84,7 +84,10 @@ router.get('/list-state', function (req, res, next) {
                     procode: {
                         $in: data.map(item => item._id),
                     },
-                }, (err, data) => {
+                    state: {
+                        $ne: '4',
+                    },
+                }, {}, (err, data) => {
                     if (err) {
                         tdata = resFrame('error', '', err);
                         res.send(tdata);
@@ -100,7 +103,10 @@ router.get('/list-state', function (req, res, next) {
             // 有procode，按项目查
             Task.getList({
                 procode,
-            }, (err, data) => {
+                state: {
+                    $ne: '4',
+                },
+            }, {}, (err, data) => {
                 if (err) {
                     tdata = resFrame('error', '', err);
                     res.send(tdata);
@@ -144,6 +150,92 @@ router.get('/list-state', function (req, res, next) {
         }, statsArr);
 
         tdata = resFrame(regroup);
+        res.send(tdata);
+    }).run();
+});
+
+router.get('/list-file', function (req, res, next) {
+    const {procode, title, starttime, endtime} = req.query,
+        {ppm_userid} = req.cookies;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    var search = {
+        state: '4',
+    };
+
+    if (title) {
+        search.title = {
+            $regex: new RegExp(title, 'i'),
+        };
+    }
+
+    if (starttime && endtime) {
+        search.filetime = {
+            $gte: starttime,
+            $lte: endtime,
+        };
+    }
+
+    var taskData;
+
+    new Chain().link(next => {
+        if (!procode) {
+            // 没有procode，按人查
+            Project.getUsersPro(ppm_userid, (err, data) => {
+                if (err) {
+                    tdata = resFrame('error', '', err);
+                    res.send(tdata);
+                    return false;
+                }
+
+                Task.getList({
+                    procode: {
+                        $in: data.map(item => item._id),
+                    },
+                    ...search,
+                }, {
+                    filetime: -1,
+                }, (err, data) => {
+                    if (err) {
+                        tdata = resFrame('error', '', err);
+                        res.send(tdata);
+                        return false;
+                    }
+        
+                    taskData = data;
+        
+                    next();
+                });
+            });
+        } else {
+            // 有procode，按项目查
+            Task.getList({
+                procode,
+                ...search,
+            }, {
+                filetime: -1,
+            }, (err, data) => {
+                if (err) {
+                    tdata = resFrame('error', '', err);
+                    res.send(tdata);
+                    return false;
+                }
+    
+                taskData = data;
+        
+                next();
+            });
+        }
+    }).link(next => {
+        tdata = resFrame(taskData);
         res.send(tdata);
     }).run();
 });
@@ -452,6 +544,65 @@ router.get('/member', function (req, res, next) {
         });
     }).link(next => {
         tdata = resFrame(taskData.member);
+        res.send(tdata);
+    }).run();
+});
+
+// 归档操作
+router.post('/file', function (req, res, next) {
+    const taskArr = req.body,
+        {ppm_userid} = req.cookies;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    var updatedGroupData;
+
+    new Chain().link(next => {
+
+        var bulkWriteSearch = taskArr.map(item => {
+            return {
+                updateOne: {
+                    filter: {
+                        _id: item._id,
+                    },
+                    update: {
+                        state: '4',
+                        filetime: app.getTime(),
+                    },
+                },
+            };
+        });
+
+        Task.bulkWrite(bulkWriteSearch, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+    
+            next();
+        });
+    }).link(next => {
+        TaskGroup.updateTask(taskArr, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            updatedGroupData = data;
+    
+            next();
+        });
+    }).link(next => {
+        tdata = resFrame(updatedGroupData);
         res.send(tdata);
     }).run();
 });
