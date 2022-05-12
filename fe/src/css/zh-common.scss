@@ -28,7 +28,8 @@ a {cursor:pointer; text-decoration:none;}
 
 .my__table{
     &.el-table {
-        td, .el-table th{padding:10px 0;}
+        .el-table__cell{padding:4px 0;}
+
         .cell{
             line-height:1.5em;
 

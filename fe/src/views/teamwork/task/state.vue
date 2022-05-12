@@ -66,7 +66,6 @@ export default {
         white-space: nowrap;
 
         .groups{
-            text-align: center;
             height: 100%;
 
             .group-dragger {

@@ -34,7 +34,7 @@
                     :data="tableData"
                     height="608px"
                     >
-                        <el-table-column label="成员">
+                        <el-table-column label="成员" width="120px">
                             <template slot-scope="scope">
                                 {{scope.row.member.name}}
                             </template>
@@ -46,8 +46,8 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="工作日" prop="reporttime"></el-table-column>
-                        <el-table-column label="工时" prop="tasktime"></el-table-column>
+                        <el-table-column label="工作日" prop="reporttime" width="120px"></el-table-column>
+                        <el-table-column label="工时" prop="tasktime" width="80px"></el-table-column>
 
                         <el-table-column label="操作" width="100px">
                             <template slot-scope="scope">

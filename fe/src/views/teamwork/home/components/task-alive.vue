@@ -11,7 +11,9 @@
             >
                 <el-table-column label="项目">
                     <template slot-scope="scope">
-                        {{scope.row.procode.proname}}
+                        <el-button type="text" @click="gotoPro(scope.row)">
+                            {{scope.row.procode.proname}}
+                        </el-button>
                     </template>
                 </el-table-column>
 
@@ -25,15 +27,13 @@
 
                 <el-table-column label="状态" width="100px">
                     <template slot-scope="scope">
-                        <state-tag :data="scope.row.state"></state-tag>
+                        <state-tag :data="scope.row.state" size="mini"></state-tag>
                     </template>
                 </el-table-column>
 
-                <el-table-column label="操作" width="140px">
+                <el-table-column label="操作" width="80px">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="editHandler(scope.row)">进度</el-button>
-
-                        <el-button type="text" icon="el-icon-s-flag" @click="gotoPro(scope.row)">项目</el-button>
                     </template>
                 </el-table-column>
             </my-table>

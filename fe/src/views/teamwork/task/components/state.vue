@@ -1,7 +1,7 @@
 <template>
     <el-tag 
     :type="mapItem.type"
-    size="small"
+    :size="size"
     >
         <i 
             v-if="mapItem.icon"
@@ -19,6 +19,10 @@ export default {
         data: {
             type: [Number, String],
             default: 0,
+        },
+        size: {
+            type: String,
+            default: 'small',
         },
     },
     data() {
