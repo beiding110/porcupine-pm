@@ -82,6 +82,8 @@ export default {
         },
         dateSel(e) {
             this.calendar.setDate(new Date(e));
+
+            this.$emit('change', this.date);
         },
         rebuildSchedule(arr) {
             function propFactory(key, item) {
