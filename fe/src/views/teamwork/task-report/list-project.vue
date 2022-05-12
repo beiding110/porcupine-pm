@@ -117,9 +117,19 @@ export default {
         Echarts,
     },
     data() {
+        var today = new Date().getTime();
+
+        var endtime = new Date(today + (1 * 24 * 60 * 60 * 1000)),
+            starttime = new Date(today - (30 * 24 * 60 * 60 * 1000));
+
+        starttime = starttime.pattern('yyyy-MM-dd');
+        endtime = endtime.pattern('yyyy-MM-dd');
+
         return {
             pgData: {
                 member: '',
+                starttime,
+                endtime,
             },
 
             ecData_byTime: {},
