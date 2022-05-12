@@ -31,7 +31,7 @@ let data = {
 
 var dataSchema = Schema(data);
 
-dataSchema.statics.getAllByUser = function(userid, cb) {
+dataSchema.statics.getAllByUser = function(userid, search, cb) {
     var projectData,
         reportData;
 
@@ -51,6 +51,7 @@ dataSchema.statics.getAllByUser = function(userid, cb) {
             procode: {
                 $in: projectData.map(item => item._id),
             },
+            ...search
         }, (err, data) => {
             if (err) {
                 cb(err);

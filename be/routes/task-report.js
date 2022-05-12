@@ -92,7 +92,8 @@ router.get('/list', function (req, res, next) {
 });
 
 router.get('/all', function (req, res, next) {
-    const {ppm_userid} = req.cookies;
+    const {time} = req.query,
+        {ppm_userid} = req.cookies;
 
     // 未登录
     if (!ppm_userid) {
@@ -103,10 +104,33 @@ router.get('/all', function (req, res, next) {
         return false;
     }
 
+    var starttime,
+        endtime,
+        search = {};
+
+    if(time) {
+        var dateTime = new Date(time),
+            monthTime = dateTime.getMonth();
+
+        starttime = new Date(time)
+        starttime.setMonth(monthTime - 1);
+        starttime.setDate(1);
+        starttime = starttime.getTime();
+
+        endtime = new Date(time)
+        endtime.setMonth(monthTime + 2);
+        endtime.setDate(1);
+        endtime = endtime.getTime();
+
+        search = {
+            $where: `new Date(this['reporttime']).getTime() > ${starttime} && new Date(this['reporttime']).getTime() <= ${endtime}`
+        };
+    }
+
     var taskReportData;
 
     new Chain().link(next => {
-        TaskReport.getAllByUser(ppm_userid, (err, data) => {
+        TaskReport.getAllByUser(ppm_userid, search, (err, data) => {
             if (err) {
                 tdata = resFrame('error', '', err);
                 res.send(tdata);

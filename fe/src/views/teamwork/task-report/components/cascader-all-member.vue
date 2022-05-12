@@ -2,6 +2,7 @@
     <tui-calendar
         :schedule="tableData"
         :props="dataProps"
+        @change="queryData"
     ></tui-calendar>
 </template>
 
@@ -25,14 +26,18 @@ export default {
         };
     },
     methods: {
-        queryData() {
-            this.$get('/taskreport/all', data => {
+        queryData(date) {
+            this.$get('/taskreport/all', {
+                time: date,
+            }, data => {
                 this.tableData = data;
             });
         },
     },
     mounted() {
-        this.queryData();
+        var date = new Date().pattern('yyyy-MM');
+
+        this.queryData(date);
     },
 }
 </script>

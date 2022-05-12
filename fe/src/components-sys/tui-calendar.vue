@@ -77,6 +77,8 @@ export default {
             var _date = this.calendar.getDate()._date;
 
             this.date = new Date(_date).pattern('yyyy-MM');
+
+            this.$emit('change', this.date);
         },
         dateSel(e) {
             this.calendar.setDate(new Date(e));
