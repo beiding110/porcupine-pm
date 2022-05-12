@@ -2,10 +2,10 @@
     <div class="task-con">
         <div class="groups">
             <group-item 
-                state
                 v-for="(item, index) in tableData" 
                 :key="index"
                 :data="item"
+                :state="item.state"
                 @reload="queryData"
                 @taskdrag="taskDragHandler"
             ></group-item>

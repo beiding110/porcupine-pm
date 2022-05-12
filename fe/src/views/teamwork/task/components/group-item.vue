@@ -171,12 +171,7 @@ export default {
     },
     methods: {
         contextMenuHandler(event) {
-            if (this.state) {
-                return;
-            }
-
-            this.$contextmenu({
-                items: [
+            var items = [
                     {
                         label: '重命名',
                         onClick: () => {
@@ -200,7 +195,27 @@ export default {
                             });
                         }
                     },
-                ],
+                ];
+
+            if (this.state) {
+                if (this.state !== '3') {
+                    return;
+                }
+
+                items = [
+                    {
+                        label: '归档已完成的',
+                        onClick: () => {
+                            showConfirm('归档后，该任务在项目中不可操作', '', () => {
+                                this.fileHandler();
+                            });
+                        },
+                    },
+                ];
+            }
+
+            this.$contextmenu({
+                items,
                 x: event.clientX,
                 y: event.clientY,
             });
