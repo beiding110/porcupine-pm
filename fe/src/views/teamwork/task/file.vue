@@ -12,7 +12,7 @@
         :data="tableData"
         :height="tableHeight + 100"
         >
-            <el-table-column label="归档时间" prop="filetime"></el-table-column>
+            <el-table-column label="归档时间" prop="filetime" width="160"></el-table-column>
 
             <el-table-column label="项目">
                 <template slot-scope="scope">
@@ -22,22 +22,22 @@
 
             <el-table-column label="任务" prop="title"></el-table-column>
 
-            <el-table-column label="计划开始" prop="starttime">
+            <el-table-column label="计划开始" prop="starttime" width="120">
                 <template slot-scope="scope">
                     {{scope.row.starttime || '-'}}
                 </template>
             </el-table-column>
-            <el-table-column label="计划结束" prop="endtime">
+            <el-table-column label="计划结束" prop="endtime" width="120">
                 <template slot-scope="scope">
                     {{scope.row.endtime || '-'}}
                 </template>
             </el-table-column>
-            <el-table-column label="计划持续" prop="duration">
+            <el-table-column label="计划持续" prop="duration" width="80">
                 <template slot-scope="scope">
                     {{scope.row.duration || '-'}}
                 </template>
             </el-table-column>
-            <el-table-column label="优先级" prop="level">
+            <el-table-column label="优先级" prop="level" width="80">
                 <template slot-scope="scope">
                     <level-state 
                         v-if="scope.row.level"
