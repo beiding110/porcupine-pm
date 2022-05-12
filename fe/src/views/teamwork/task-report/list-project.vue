@@ -100,7 +100,7 @@ import LIST_MIXIN from '@mixins/list-page';
 import DIALOG_LIST_MIXIN from '@mixins/dialog-list-page';
 
 import TuiCalendar from '@components-sys/tui-calendar';
-import HotspotMap from '@components-sys/hotspot-map';
+import HotspotMap from '@components-sys/hotspot-map/index';
 
 import FormPage from './form';
 import Echarts from '../../../components/echarts';

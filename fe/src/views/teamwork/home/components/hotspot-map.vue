@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import HotspotMap from '@components-sys/hotspot-map';
+import HotspotMap from '@components-sys/hotspot-map/index';
 
 export default {
     components: {
