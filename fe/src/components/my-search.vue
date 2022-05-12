@@ -4,7 +4,16 @@
             <slot></slot>
             <slot name="time">
                 <el-form-item>
-                    <el-date-picker value-format="yyyy-MM-dd" v-model="pgData.time" type="daterange" range-separator="至" :start-placeholder="timeStartPlaceholder" :end-placeholder="timeEndPlaceholder" popper-class="bd__datepiaker"></el-date-picker>
+                    <el-date-picker 
+                        value-format="yyyy-MM-dd" 
+                        v-model="pgData.time" 
+                        type="daterange" 
+                        range-separator="至" 
+                        :start-placeholder="timeStartPlaceholder" 
+                        :end-placeholder="timeEndPlaceholder" 
+                        popper-class="bd__datepiaker"
+                        :picker-options="pickerOptions"
+                    ></el-date-picker>
                 </el-form-item>
             </slot>
             <slot name="title">
@@ -22,6 +31,8 @@
 </template>
 
 <script>
+import pickerOptions from '@/js/pickerOptions';
+
 export default {
     props: {
         value: {
@@ -55,7 +66,9 @@ export default {
             pgData: {
                 time: [that.value.starttime || '', that.value.endtime || ''],
                 title: '',
-            }
+            },
+
+            pickerOptions,
         }
     },
     watch: {

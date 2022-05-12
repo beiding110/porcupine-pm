@@ -9,6 +9,7 @@
                         size="small"
                         format="yyyy-MM-dd"
                         value-format="yyyy-MM-dd"
+                        :picker-options="pickerOptions"
                         @change="queryData"
                     ></el-date-picker>
                 </el-form-item>
@@ -55,6 +56,8 @@ import Echarts from '@components/echarts';
 
 import HotspotMap from '@components-sys/hotspot-map/index';
 
+import pickerOptions from '@/js/pickerOptions';
+
 export default {
     mixins: [DIALOG_LIST_MIXIN],
     components: {
@@ -79,6 +82,8 @@ export default {
 
             dateRange: [firstOfYear, lastDayOfYear],
             member: '',
+
+            pickerOptions: pickerOptions,
         };
     },
     computed: {
