@@ -22,6 +22,14 @@
                         @select="queryData"
                     ></my-select>
                 </el-form-item>
+
+                <el-form-item>
+                    <el-button 
+                        type="warning"
+                        icon="el-icon-help" 
+                        @click="dialogShow"
+                    ></el-button>
+                </el-form-item>
             </el-form>
         </div>
 
@@ -29,14 +37,28 @@
             :data="data"
             :range="dateRange"
         ></hotspot-map>
+
+        <my-dialog v-model="dialogVisible">
+            <echarts 
+                v-if="dialogVisible"
+                :data="ecData"
+                height="500px"
+            ></echarts>
+        </my-dialog>
     </el-card>
 </template>
 
 <script>
+import DIALOG_LIST_MIXIN from '@mixins/dialog-list-page';
+
+import Echarts from '@components/echarts';
+
 import HotspotMap from '@components-sys/hotspot-map/index';
 
 export default {
+    mixins: [DIALOG_LIST_MIXIN],
     components: {
+        Echarts,
         HotspotMap,
     },
     data() {
@@ -58,6 +80,47 @@ export default {
             dateRange: [firstOfYear, lastDayOfYear],
             member: '',
         };
+    },
+    computed: {
+        ecData() {
+            return {
+                title: {
+                    text: '项目-工时/人力统计',
+                    left: 'center',
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                series: [
+                    {
+                        name: '工时',
+                        type: 'pie',
+                        radius: '40%',
+                        data: this.data.map(item => {
+                            return {
+                                value: item.tasktime,
+                                name: item.proname,
+                            }
+                        }),
+                    },
+                    {
+                        name: '人力',
+                        type: 'pie',
+                        radius: ['45%', '60%'],
+                        data: this.data.map(item => {
+                            return {
+                                value: item.member.length,
+                                name: item.proname,
+                            }
+                        }),
+                    }
+                ],
+            };
+        },
     },
     methods: {
         queryData() {
