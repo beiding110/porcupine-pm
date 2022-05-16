@@ -194,17 +194,19 @@ export default {
                 };
             }
 
-            var {reporttime, reporttimes} = report[reportIndex],
+            var {tasktime, reporttimes} = report[reportIndex],
                 normalColor = '#40C463',
                 middleColor = '#30A14E',
                 highColor = '#216E39';
 
-            if (reporttimes <= 1) {
+            // if (reporttimes <= 1) {
+            if (tasktime <= 2) {
                 return {
                     background: normalColor,
                     border: normalColor,
                 };
-            } else if (reporttimes <= 2) {
+            // } else if (reporttimes <= 2) {
+            } else if (tasktime <= 6) {
                 return {
                     background: middleColor,
                     border: middleColor,
