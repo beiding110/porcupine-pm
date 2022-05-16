@@ -261,6 +261,7 @@ export default {
 
             .text{
                 flex: 1;
+                white-space: break-spaces;
             }
 
             .dropdown{
