@@ -7,13 +7,50 @@
         </my-search>
         
         <div class="list">
-            <card-pro 
-                v-for="item in tableData"
-                :key="item._id"
-                :data="item"
-                @edit="editHandler(item)"
-                @reload="queryData"
-            ></card-pro>
+            <draggable 
+            v-model="g0" 
+            group="groups"
+            class="group-dragger g0"
+            @change="proDragHandler"
+            >
+                <card-pro 
+                    v-for="item in g0"
+                    :key="item._id"
+                    :data="item"
+                    @edit="editHandler(item)"
+                    @reload="queryData"
+                ></card-pro>
+            </draggable>
+
+            <draggable 
+            v-model="g1" 
+            group="groups"
+            class="group-dragger g1"
+            @change="proDragHandler"
+            >
+                <card-pro 
+                    v-for="item in g1"
+                    :key="item._id"
+                    :data="item"
+                    @edit="editHandler(item)"
+                    @reload="queryData"
+                ></card-pro>
+            </draggable>
+
+            <draggable 
+            v-model="g2" 
+            group="groups"
+            class="group-dragger g2"
+            @change="proDragHandler"
+            >
+                <card-pro 
+                    v-for="item in g2"
+                    :key="item._id"
+                    :data="item"
+                    @edit="editHandler(item)"
+                    @reload="queryData"
+                ></card-pro>
+            </draggable>
         </div>
 
         <my-dialog 
@@ -34,12 +71,15 @@
 import LIST_MIXIN from '@mixins/list-page';
 import DIALOG_LIST_MIXIN from '@mixins/dialog-list-page';
 
+import Draggable from 'vuedraggable';
+
 import CardPro from './components/card-pro';
 import FormPage from './form';
 
 export default {
     mixins: [ LIST_MIXIN, DIALOG_LIST_MIXIN ],
     components: {
+        Draggable,
         CardPro,
         FormPage,
     },
@@ -49,11 +89,27 @@ export default {
             tableData: [],
             pgData:{},
             
-            loadingController: false
+            loadingController: false,
+
+            g0: [],
+            g1: [],
+            g2: [],
+
+            proUpdateLock: false,
         };
     },
     computed: {
-
+        
+    },
+    watch: {
+        tableData: {
+            handler(val) {
+                this.g0 = val.filter(item => !item.groupcode);
+                this.g1 = val.filter(item => item.groupcode === 1);
+                this.g2 = val.filter(item => item.groupcode === 2);
+            }, 
+            deep: true,
+        },
     },
     methods: {
         queryData() {
@@ -64,6 +120,24 @@ export default {
         reloadHandler() {
             this.queryData();
         },
+        proDragHandler() {
+            this.proUpdateLock = true;
+
+            ['g0', 'g1', 'g2'].forEach((key, keyIndex) => {
+                this[key].forEach((item, index) => {
+                    item.groupcode = keyIndex;
+                    item.order = index;
+                });
+            });
+
+            this.$post('/project/updatedrag', [
+                ...this.g0,
+                ...this.g1,
+                ...this.g2,
+            ], () => {
+                this.proUpdateLock = false;
+            }, true);
+        },
     },
     mounted: function() {
         this.queryData();
@@ -72,7 +146,9 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
+    @import '@css/var.scss';
+
     .paoject-main{
         position: absolute;
         left: 0;
@@ -82,8 +158,31 @@ export default {
     }
 
     .list{
-        display: flex;
-        flex-wrap: wrap;
         margin: -10px;
+        margin-top: 0;
+        height: calc(100vh - 93px);
+        overflow: auto;
+
+        .group-dragger{
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+
+            border: 1px dashed $primaryColor5;
+
+            min-height: calc((100vh - 123px) / 3);
+
+            & + .group-dragger{
+                margin-top: 10px;
+            }
+
+            &.g1 {
+                border-color: $warningColor5;
+            }
+
+            &.g2 {
+                border-color: $successColor5;
+            }
+        }
     }
 </style>

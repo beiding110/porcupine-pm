@@ -40,7 +40,12 @@ router.get('/list', function (req, res, next) {
         };
     }
 
-    Project.find(search, (err, data) => {
+    Project.find(search, null, {
+        sort: {
+            order: 1,
+            addtime: -1,
+        },
+    }, (err, data) => {
         if (err) {
             tdata = resFrame('error', '', err);
             res.send(tdata);
@@ -205,6 +210,48 @@ router.post('/del', function (req, res, next) {
     Project.findByIdAndUpdate(procode, {
         scbj: 1
     }, (err, data) => {
+        if (err) {
+            tdata = resFrame('error', '', err);
+            res.send(tdata);
+            return false;
+        }
+
+        tdata = resFrame(data);
+        res.send(tdata);
+    });
+});
+
+// 更新分组及排序
+router.post('/updatedrag', function (req, res, next) {
+    const proArr = req.body,
+        {ppm_userid} = req.cookies;
+
+    // 未登录
+    if (!ppm_userid) {
+        tdata = resFrame('login-index', '', '身份过期，请重新登录');
+
+        res.send(tdata);
+
+        return false;
+    }
+
+    var bwArr = proArr.reduce((ba, item) => {
+        ba.push({
+            updateOne: {
+                filter: {
+                    _id: item._id,
+                },
+                update: {
+                    order: item.order,
+                    groupcode: item.groupcode,
+                }
+            }
+        });
+
+        return ba;
+    }, []);
+
+    Project.bulkWrite(bwArr, (err, data) => {
         if (err) {
             tdata = resFrame('error', '', err);
             res.send(tdata);

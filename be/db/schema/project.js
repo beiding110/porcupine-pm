@@ -15,6 +15,8 @@ let data = {
             ref: 'project-member'
         }
     ],
+    order: Number,
+    groupcode: Number,
 };
 
 var dataSchema = Schema(data);
