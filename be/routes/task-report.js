@@ -279,9 +279,9 @@ router.get('/hotmap', function (req, res, next) {
     }).link(next => {
         function whereFac() {
             var start = new Date(starttime).getTime(),
-                end = new Date(endtime).getTime();
+                end = new Date(endtime).getTime() + 86400000;
 
-            return `new Date(this['reporttime']).getTime() > ${start} && new Date(this['reporttime']).getTime() <= ${end}`;
+            return `new Date(this['reporttime']).getTime() >= ${start} && new Date(this['reporttime']).getTime() < ${end}`;
         }
 
         var search = {
