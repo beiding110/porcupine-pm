@@ -7,7 +7,7 @@
         >
             <my-table
             :data="table.task"
-            height="182px"
+            height="299px"
             >
                 <el-table-column label="项目">
                     <template slot-scope="scope">
@@ -64,7 +64,6 @@ export default {
     data() {
         return {
             tableData: [
-                {state: '0', task: [],},
                 {state: '1', task: [],},
                 {state: '2', task: [],},
             ],
@@ -76,7 +75,7 @@ export default {
                 var tableData = data;
                 
                 tableData = tableData.filter(item => {
-                    return ~['0', '1', '2'].indexOf(item.state);
+                    return ~['1', '2'].indexOf(item.state);
                 });
 
                 tableData.forEach(table => {
