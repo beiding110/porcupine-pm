@@ -114,7 +114,9 @@ $topNavWithTagNavHeight: 80px;
         padding: 10px;
         overflow: auto;
         transition: all .3s;
-        background-color: $primaryColor1;
+        // background-color: $primaryColor1;
+        // background: linear-gradient(to right, #55A3E2, #05C7AC);
+        background: linear-gradient(to right, #00c996, #003d4d);
 
         .view-box{
             position: relative;
