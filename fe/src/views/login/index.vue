@@ -32,7 +32,7 @@
 
                     <template slot="btn" slot-scope="scope">
                         <el-button 
-                        type="primary" 
+                        type="success" 
                         class="btn-login" 
                         @click="scope.submitHandler"
                         >
