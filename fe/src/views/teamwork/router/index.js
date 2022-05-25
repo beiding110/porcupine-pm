@@ -3,6 +3,7 @@ import task from './modules/task';
 import taskReport from './modules/task-report';
 import home from './modules/home';
 import file from './modules/file';
+import gantt from './modules/gantt';
 
 export default {
     path: 'teamwork',
@@ -13,5 +14,6 @@ export default {
         taskReport,
         home,
         file,
+        gantt,
     ]
 }

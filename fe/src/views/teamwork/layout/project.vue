@@ -55,6 +55,10 @@ export default {
                     title: '时间轴',
                     path: `/teamwork/${this.$route.params.procode}/task/timeline`,
                 },
+                {
+                    title: '甘特图',
+                    path: `/teamwork/${this.$route.params.procode}/gantt/main`,
+                },
             ];
         }
     },
@@ -92,7 +96,7 @@ export default {
             .navs{
                 display: flex;
                 height: $topNavHeight;
-                width: 240px;
+                width: 360px;
                 margin: 0 auto;
 
                 .item{

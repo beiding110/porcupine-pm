@@ -24,5 +24,12 @@ export default {
                 title: '时间轴',
             }
         },
+        {
+            path: 'gantt',
+            component: () => import(/*webpackChunkName: 'pc-tw-task'*/ '@views/teamwork/task/gantt'),
+            meta: {
+                title: '甘特图',
+            }
+        },
     ]
 }

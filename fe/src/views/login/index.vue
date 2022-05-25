@@ -71,7 +71,7 @@ export default {
 
 <style scoped lang="scss">
 @import '@css/var.scss';
-.login-page{width:100%; height:100%; background:url(./images/bg.jpg) no-repeat $primaryColor; background-size:cover;}
+.login-page{width:100%; height:100%; background:url(./images/bg.jpg) no-repeat #003d4d; background-size:cover;}
 .logo-corner{position:absolute; left:100px; top:50px;
     img{height:30px;}
 }
