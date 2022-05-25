@@ -21,13 +21,17 @@ let data = {
 
 var dataSchema = Schema(data);
 
-dataSchema.statics.getUsersPro = function(userid, cb) {
+dataSchema.statics.getUsersPro = function(userid, all = false, cb) {
     var search = {
-        scbj: {
-            $ne: 1,
-        },
         adduser: userid,
     };
+
+    if (!all) {
+        // 获取的，不包括已删除的
+        search.scbj = {
+            $ne: 1
+        };
+    }
 
     this.find(search, (err, data) => {
         if (err) {

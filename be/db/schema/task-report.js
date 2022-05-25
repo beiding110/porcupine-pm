@@ -36,7 +36,7 @@ dataSchema.statics.getAllByUser = function(userid, search, cb) {
         reportData;
 
     new Chain().link(next => {
-        Project.getUsersPro(userid, (err, data) => {
+        Project.getUsersPro(userid, true, (err, data) => {
             if (err) {
                 cb(err);
                 return false;

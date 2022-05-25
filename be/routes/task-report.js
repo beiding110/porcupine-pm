@@ -265,7 +265,7 @@ router.get('/hotmap', function (req, res, next) {
         reportData;
 
     new Chain().link(next => {
-        Project.getUsersPro(ppm_userid, (err, data) => {
+        Project.getUsersPro(ppm_userid, true, (err, data) => {
             if (err) {
                 tdata = resFrame('error', '', err);
                 res.send(tdata);

@@ -73,7 +73,7 @@ router.get('/list-state', function (req, res, next) {
     new Chain().link(next => {
         if (!procode) {
             // 没有procode，按人查
-            Project.getUsersPro(ppm_userid, (err, data) => {
+            Project.getUsersPro(ppm_userid, false, (err, data) => {
                 if (err) {
                     tdata = resFrame('error', '', err);
                     res.send(tdata);
@@ -189,7 +189,7 @@ router.get('/list-file', function (req, res, next) {
     new Chain().link(next => {
         if (!procode) {
             // 没有procode，按人查
-            Project.getUsersPro(ppm_userid, (err, data) => {
+            Project.getUsersPro(ppm_userid, true, (err, data) => {
                 if (err) {
                     tdata = resFrame('error', '', err);
                     res.send(tdata);
