@@ -14,13 +14,13 @@
         >
             <el-table-column label="归档时间" prop="filetime" width="160"></el-table-column>
 
-            <el-table-column label="项目">
+            <el-table-column label="项目" width="180">
                 <template slot-scope="scope">
                     {{scope.row.procode.proname}}
                 </template>
             </el-table-column>
 
-            <el-table-column label="任务" prop="title"></el-table-column>
+            <el-table-column label="任务" prop="title" min-width="180"></el-table-column>
 
             <el-table-column label="计划开始" prop="starttime" width="120">
                 <template slot-scope="scope">
@@ -54,19 +54,44 @@
                     {{scope.row.members}}
                 </template>
             </el-table-column>
+
+            <el-table-column label="操作" prop="level" width="120">
+                <template slot-scope="scope">
+                    <el-button 
+                    type="text" 
+                    icon="el-icon-date"
+                    @click="editHandler(scope.row)"
+                    >
+                        工时记录
+                    </el-button>
+                </template>
+            </el-table-column>
         </my-table>
+
+        <my-dialog 
+        v-model="dialogVisible"
+        :title="`${form.title}-工时记录`"
+        >
+            <list-task 
+                v-if="dialogVisible"
+                :data="form"
+            ></list-task>
+        </my-dialog>
     </el-card>
 </template>
 
 <script>
 import LIST_MIXIN from '@mixins/list-page';
+import DIALOG_LIST_MIXIN from '@mixins/dialog-list-page';
 
 import LevelState from './components/level';
+import ListTask from '../task-report/components/list-task';
 
 export default {
-    mixins: [LIST_MIXIN],
+    mixins: [LIST_MIXIN, DIALOG_LIST_MIXIN],
     components: {
         LevelState,
+        ListTask,
     },
     data() {
         var today = new Date().getTime();
