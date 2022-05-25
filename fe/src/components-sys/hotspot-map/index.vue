@@ -63,7 +63,11 @@
             <div class="empty" v-if="!data.length">空</div>
         </div>
 
-        <div class="body">
+        <div 
+        ref="wheelBody"
+        class="body" 
+        @wheel.prevent="scrollBodyWheelHandler"
+        >
             <div class="scroll-wrap">
                 <table-canvas
                     :date="dayRange"
@@ -254,6 +258,10 @@ export default {
             });
 
             arr.reverse();
+        },
+        // 横向滚动
+        scrollBodyWheelHandler(e) {
+            this.$refs.wheelBody.scrollLeft += e.deltaY;
         },
     },
     mounted() {
