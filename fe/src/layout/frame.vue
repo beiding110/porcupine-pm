@@ -55,6 +55,11 @@ export default {
                     icon: 'el-icon-document',
                 },
                 {
+                    title: '日报',
+                    path: '/teamwork/taskreport/monthly',
+                    icon: 'el-icon-date',
+                },
+                {
                     title: '归档数据',
                     path: '/teamwork/file',
                     icon: 'el-icon-document-checked',

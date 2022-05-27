@@ -354,4 +354,92 @@ router.get('/hotmapbyproject', function (req, res, next) {
     }).run();
 });
 
+router.get('/monthly', function (req, res, next) {
+    const {time} = req.query,
+        {ppm_userid} = req.cookies;
+
+    var reportData;
+
+    new Chain().link(next => {
+        if(time) {
+            var dateTime = new Date(time),
+                monthTime = dateTime.getMonth();
+    
+            starttime = new Date(time)
+            starttime.setDate(1);
+            starttime = starttime.getTime();
+    
+            endtime = new Date(time)
+            endtime.setMonth(monthTime + 1);
+            endtime.setDate(1);
+            endtime = endtime.getTime();
+    
+            search = {
+                $where: `new Date(this['reporttime']).getTime() > ${starttime} && new Date(this['reporttime']).getTime() <= ${endtime}`
+            };
+        }
+
+        TaskReport.getAllByUser(ppm_userid, search, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+    
+            next();
+        });
+    }).link(next => {
+        var members = [],
+            dates = [];
+
+        reportData.forEach(report => {
+            if (!members.some(member => {
+                return member.id === report.member.id;
+            })) {
+                members.push(report.member);
+            }
+
+            var matchedIndex,
+                newItem = {
+                    detail: report.detail,
+                    proname: report.procode.proname,
+                };
+
+            if (!dates.some((day, di) => {
+                if (day.reporttime === report.reporttime) {
+                    matchedIndex = di;
+                    return true;
+                }
+
+                return false;
+            })) {
+                dates.push({
+                    reporttime: report.reporttime,
+                    [report.member.id]: [
+                        newItem,
+                    ]
+                });
+            } else {
+                if (dates[matchedIndex][report.member.id]) {
+                    dates[matchedIndex][report.member.id].push(newItem);
+                } else {
+                    dates[matchedIndex][report.member.id] = [
+                        newItem,
+                    ];
+                }
+            }
+        });
+
+        tdata = resFrame({
+            rows: dates.sort((a, b) => {
+                return new Date(a.reporttime) - new Date(b.reporttime);
+            }),
+            cols: members,
+        });
+        res.send(tdata);
+    }).run();
+});
+
 module.exports = router;

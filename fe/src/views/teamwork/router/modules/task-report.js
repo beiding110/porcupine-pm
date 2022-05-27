@@ -7,3 +7,18 @@ export var project = [
         }
     },
 ];
+
+export var independent = {
+    path: 'taskreport',
+    redirect: 'taskreport/monthly',
+    component: () => import(/*webpackChunkName: 'pc-tw-taskreport'*/ '@layout/empty'),
+    children: [
+        {
+            path: 'monthly',
+            component: () => import(/*webpackChunkName: 'pc-tw-taskreport'*/ '@views/teamwork/task-report/monthly'),
+            meta: {
+                title: '日报',
+            },
+        },
+    ],
+};
