@@ -9,18 +9,12 @@ const GanttLink = require('../db/schema/gantt-link');
 
 const Chain = require('../utils/Chain');
 
+const isLogin = require('../middleware/is-login');
+router.use(isLogin);
+
 router.get('/list', function (req, res, next) {
     const {procode} = req.query,
         {ppm_userid} = req.cookies;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     if (!procode) {
         tdata = resFrame('error', '', 'procode必传');
@@ -69,15 +63,6 @@ router.post('/save', function (req, res, next) {
         {ppm_userid} = req.cookies;
 
     var tdata;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     if (!procode) {
         tdata = resFrame('error', '', 'procode必传');

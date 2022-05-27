@@ -8,18 +8,12 @@ const TaskReport = require('../db/schema/task-report');
 const Project = require('../db/schema/project');
 const Chain = require('../utils/Chain');
 
+const isLogin = require('../middleware/is-login');
+router.use(isLogin);
+
 router.get('/list', function (req, res, next) {
     const {procode, taskcode, starttime, endtime, member} = req.query,
         {ppm_userid} = req.cookies;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     var search = {
         adduser: ppm_userid,
@@ -95,15 +89,6 @@ router.get('/all', function (req, res, next) {
     const {time} = req.query,
         {ppm_userid} = req.cookies;
 
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
     var starttime,
         endtime,
         search = {};
@@ -152,16 +137,6 @@ router.post('/form', function (req, res, next) {
         {ppm_userid} = req.cookies;
 
     var tdata;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
 
     if (form._id) {
         // 编辑
@@ -219,15 +194,6 @@ router.get('/detail', function (req, res, next) {
     const {_id} = req.query,
         {ppm_userid} = req.cookies;
 
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
     var taskReportData;
 
     new Chain().link(next => {
@@ -251,15 +217,6 @@ router.get('/detail', function (req, res, next) {
 router.get('/hotmap', function (req, res, next) {
     const {starttime, endtime, member} = req.query,
         {ppm_userid} = req.cookies;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     var projectData,
         reportData;
@@ -340,15 +297,6 @@ router.get('/hotmap', function (req, res, next) {
 router.get('/hotmapbyproject', function (req, res, next) {
     const {procode} = req.query,
         {ppm_userid} = req.cookies;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     var reportData;
 

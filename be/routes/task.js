@@ -9,18 +9,12 @@ const Task = require('../db/schema/task');
 const TaskGroup = require('../db/schema/task-group');
 const Project = require('../db/schema/project');
 
+const isLogin = require('../middleware/is-login');
+router.use(isLogin);
+
 router.get('/list', function (req, res, next) {
     const {title, procode, groupcode} = req.query,
         {ppm_userid} = req.cookies;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     var search = {
         adduser: ppm_userid,
@@ -58,15 +52,6 @@ router.get('/list', function (req, res, next) {
 router.get('/list-state', function (req, res, next) {
     const {procode} = req.query,
         {ppm_userid} = req.cookies;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     var taskData;
 
@@ -158,15 +143,6 @@ router.get('/list-file', function (req, res, next) {
     const {procode, title, starttime, endtime} = req.query,
         {ppm_userid} = req.cookies;
 
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
     var search = {
         state: '4',
     };
@@ -245,16 +221,6 @@ router.post('/form', function (req, res, next) {
         {ppm_userid} = req.cookies;
 
     var tdata;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
 
     if (form._id) {
         // 编辑
@@ -370,15 +336,6 @@ router.get('/detail', function (req, res, next) {
     const {taskcode} = req.query,
         {ppm_userid} = req.cookies;
 
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
     var taskData;
 
     new Chain().link(next => {
@@ -404,15 +361,6 @@ router.post('/del', function (req, res, next) {
         {ppm_userid} = req.cookies;
 
     var tdata;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     if (!_id) {
         tdata = resFrame('error', '', '请选择要删除的项');
@@ -445,15 +393,6 @@ router.post('/updatestete', function (req, res, next) {
 
     var tdata;
 
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
     if (!_id) {
         tdata = resFrame('error', '', '请选择要更新的项');
 
@@ -481,15 +420,6 @@ router.post('/updatedrag', function (req, res, next) {
         {ppm_userid} = req.cookies;
 
     var tdata;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     new Chain().link(next => {
         Task.updateDrag(groupArr, (err, data) => {
@@ -519,15 +449,6 @@ router.get('/member', function (req, res, next) {
     const {taskcode} = req.query,
         {ppm_userid} = req.cookies;
 
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
     var taskData;
 
     new Chain().link(next => {
@@ -552,15 +473,6 @@ router.get('/member', function (req, res, next) {
 router.post('/file', function (req, res, next) {
     const taskArr = req.body,
         {ppm_userid} = req.cookies;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     var updatedGroupData;
 
@@ -611,15 +523,6 @@ router.post('/file', function (req, res, next) {
 router.get('/timeline', function (req, res, next) {
     const {procode} = req.query,
         {ppm_userid} = req.cookies;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
     
     var taskData,
         groupData;

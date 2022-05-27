@@ -8,18 +8,12 @@ const TaskGroup = require('../db/schema/task-group');
 const Task = require('../db/schema/task');
 const Chain = require('../utils/Chain');
 
+const isLogin = require('../middleware/is-login');
+router.use(isLogin);
+
 router.get('/list', function (req, res, next) {
     const {title, procode} = req.query,
         {ppm_userid} = req.cookies;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     var search = {
         adduser: ppm_userid,
@@ -91,16 +85,6 @@ router.post('/form', function (req, res, next) {
 
     var tdata;
 
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
-
     if (form._id) {
         // 编辑
 
@@ -142,15 +126,6 @@ router.post('/del', function (req, res, next) {
 
     var tdata;
 
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
-
     if (!_id) {
         tdata = resFrame('error', '', '请选择要删除的项');
 
@@ -181,15 +156,6 @@ router.post('/updateorder', function (req, res, next) {
         {ppm_userid} = req.cookies;
 
     var tdata;
-
-    // 未登录
-    if (!ppm_userid) {
-        tdata = resFrame('login-index', '', '身份过期，请重新登录');
-
-        res.send(tdata);
-
-        return false;
-    }
 
     TaskGroup.updateOrder(orderArr, (err, data) => {
         if (err) {
