@@ -1,0 +1,74 @@
+<template>
+    <div class="pro-shift">
+        <el-select 
+        class="select"
+        v-model="currentPro" 
+        size="small"
+        @change="changeHandler"
+        >
+            <el-option
+                v-for="item in tableData"
+                :key="item._id"
+                :label="item.proname"
+                :value="item._id"
+            ></el-option>
+        </el-select>
+    </div>
+</template>
+
+<script>
+import MODEL_MIXIN from '@mixins/model';
+
+export default {
+    mixins: [MODEL_MIXIN],
+    data() {
+        return {
+            tableData: [],
+
+            currentPro: '',
+            lastPro: '',
+        };
+    },
+    methods: {
+        queryData() {
+            this.$get('/project/list', this.pgData, data => {
+                this.tableData = data;
+
+                this.currentPro = this.lastPro = this.$route.params.procode;
+            });
+        },
+        changeHandler(val) {
+            var nextPro = val,
+                fullPath = this.$route.fullPath;
+
+            fullPath = fullPath.replace(this.lastPro, nextPro);
+
+            this.$router.replace(fullPath);
+        },
+    },
+    created() {
+        this.queryData();
+    },
+};
+</script>
+
+<style lang="scss" scoped>
+    .pro-shift{
+        display: flex;
+        
+        .select{
+            display: flex;
+            align-items: center;
+
+            ::v-deep {
+                .el-input__inner{
+                    border-radius: 0;
+                    border-left: none;
+                    border-top: none;
+                    border-right: none;
+                    // border: none;
+                }
+            }
+        }
+    }
+</style>

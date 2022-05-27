@@ -1,9 +1,7 @@
 <template>
     <div class="layout-pro">
         <div class="top-nav">
-            <div class="bread">
-                <breadcrumb></breadcrumb>
-            </div>
+            <shift-pro></shift-pro>
 
             <div class="navs">
                 <div 
@@ -25,15 +23,15 @@
 </template>
 
 <script>
-import Breadcrumb from '@/layout/components/breadcrumb';
+import ShiftPro from './components/shift-pro';
 
 export default {
     components: {
-        Breadcrumb,
+        ShiftPro,
     },
     data() {
         return {
-            
+            currentPro: '',
         };
     },
     computed: {
@@ -67,6 +65,9 @@ export default {
             return this.$route.path === item.path;
         },
     },
+    created() {
+        
+    },
 }
 </script>
 
@@ -85,19 +86,21 @@ export default {
             margin: -10px;
             margin-bottom: 10px;
             background: white;
-            padding: 0 20px;
+            padding: 0 10px;
+            position: relative;
 
             .bread{
                 display: flex;
                 align-items: center;
-                width: 300px;
             }
 
             .navs{
                 display: flex;
                 height: $topNavHeight;
                 width: 360px;
-                margin: 0 auto;
+                position: absolute;
+                left: 50%;
+                transform: translate(-50%);
 
                 .item{
                     display: flex;
