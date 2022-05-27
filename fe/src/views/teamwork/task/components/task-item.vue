@@ -71,7 +71,7 @@ import PeopleEditor from '../../project/components/people-editor';
 import DropdownMenu from '@components-sys/dropdown-menu';
 import FormPage from '../form';
 import FormPageTaskReport from '../../task-report/form';
-import ProInfoIcon from './pro-info-icon';
+import ProInfoIcon from '../../project/components/pro-info-icon';
 
 export default {
     mixins: [DIALOG_LIST_MIXIN],

@@ -9,7 +9,7 @@
                 v-for="(item, index) in nav"
                 :key="index"
                 :class="{active: calcActive(item)}"
-                @click="goto(item.path)"
+                @click="$router.replace(item.path)"
                 >
                     {{item.title}}
                 </div>
@@ -39,23 +39,23 @@ export default {
             return [
                 {
                     title: '任务组',
-                    path: `/teamwork/${this.$route.params.procode}/task/index`,
+                    path: `/teamwork/${this.$route.params.procode}/task`,
                 },
                 {
                     title: '状态组',
-                    path: `/teamwork/${this.$route.params.procode}/task/state`,
+                    path: `/teamwork/${this.$route.params.procode}/state`,
                 },
                 {
                     title: '工时',
-                    path: `/teamwork/${this.$route.params.procode}/taskreport/list`,
+                    path: `/teamwork/${this.$route.params.procode}/taskreport`,
                 },
                 {
                     title: '时间轴',
-                    path: `/teamwork/${this.$route.params.procode}/task/timeline`,
+                    path: `/teamwork/${this.$route.params.procode}/timeline`,
                 },
                 {
                     title: '甘特图',
-                    path: `/teamwork/${this.$route.params.procode}/gantt/main`,
+                    path: `/teamwork/${this.$route.params.procode}/gantt`,
                 },
             ];
         }

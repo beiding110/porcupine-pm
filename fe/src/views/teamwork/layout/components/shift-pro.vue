@@ -7,11 +7,18 @@
         @change="changeHandler"
         >
             <el-option
-                v-for="item in tableData"
-                :key="item._id"
-                :label="item.proname"
-                :value="item._id"
-            ></el-option>
+            v-for="item in tableData"
+            :key="item._id"
+            :label="item.proname"
+            :value="item._id"
+            >
+                <div class="pro-item">
+                    <pro-info-icon :data="item"></pro-info-icon>
+                    <div class="proname">
+                        {{item.proname}}
+                    </div>
+                </div>
+            </el-option>
         </el-select>
     </div>
 </template>
@@ -19,21 +26,35 @@
 <script>
 import MODEL_MIXIN from '@mixins/model';
 
+import ProInfoIcon from '../../project/components/pro-info-icon';
+
+import {mapGetters} from 'vuex';
+
 export default {
     mixins: [MODEL_MIXIN],
+    components: {
+        ProInfoIcon,
+    },
     data() {
         return {
-            tableData: [],
-
             currentPro: '',
             lastPro: '',
         };
     },
+    computed: {
+        ...mapGetters({
+            tableData: 'projects',
+        }),
+    },
     methods: {
         queryData() {
-            this.$get('/project/list', this.pgData, data => {
-                this.tableData = data;
+            // this.$get('/project/list', this.pgData, data => {
+            //     this.tableData = data;
 
+            //     this.currentPro = this.lastPro = this.$route.params.procode;
+            // });
+
+            this.$store.dispatch('queryProjects', () => {
                 this.currentPro = this.lastPro = this.$route.params.procode;
             });
         },
@@ -69,6 +90,14 @@ export default {
                     // border: none;
                 }
             }
+        }
+    }
+
+    .pro-item{
+        display: flex;
+
+        .proname{
+            margin-left: 10px;
         }
     }
 </style>

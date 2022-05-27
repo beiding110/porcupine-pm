@@ -96,7 +96,7 @@ export default {
             this.dialogShow();
         },
         gotoPro(row) {
-            this.goto(`/teamwork/${row.procode._id}/task/index`)
+            this.goto(`/teamwork/${row.procode._id}/task`)
         },
     },
     mounted() {
