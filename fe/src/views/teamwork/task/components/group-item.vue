@@ -54,7 +54,7 @@
             </div>
         </card>
 
-        <div class="body state" :class="{empty: !data.task || !data.task.length}">
+        <div class="body" :class="{empty: !data.task || !data.task.length, state,}">
             <draggable 
             v-model="data.task" 
             group="tasks"
