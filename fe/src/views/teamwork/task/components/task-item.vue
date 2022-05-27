@@ -113,7 +113,7 @@ export default {
                         this.dialogTitle = '上报工时';
                         this.dialogComponent = 'form-page-task-report';
                         this.form = {
-                            procode: this.$route.params.procode,
+                            procode: this.data.procode._id,
                             taskcode: this.data._id,
                         };
                         this.dialogShow();
@@ -150,7 +150,7 @@ export default {
                             this.dialogTitle = '上报工时';
                             this.dialogComponent = 'form-page-task-report';
                             this.form = {
-                                procode: this.$route.params.procode,
+                                procode: this.data.procode._id,
                                 taskcode: this.data._id,
                             };
                             this.dialogShow();
