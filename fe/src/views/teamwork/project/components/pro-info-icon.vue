@@ -27,6 +27,10 @@ export default {
         firstName() {
             var proname = this.data.proname;
 
+            if (!proname) {
+                return '-';
+            }
+
             return proname.slice(0, 1);
         },
         themeColor() {
@@ -34,7 +38,12 @@ export default {
                 return this.data.covercolor;
             }
 
-            var id = this.data._id
+            var id = this.data._id;
+
+            if (!id) {
+                return '#C0CFE3';
+            }
+
             return `#${id.slice(5, 9)}${id.slice(-2, id.length)}`;
         },
     },

@@ -19,6 +19,10 @@
                     </div>
                 </div>
             </el-option>
+
+            <div slot="prefix">
+                <pro-info-icon :data="currentProData"></pro-info-icon>
+            </div>
         </el-select>
     </div>
 </template>
@@ -45,6 +49,9 @@ export default {
         ...mapGetters({
             tableData: 'projects',
         }),
+        currentProData() {
+            return this.tableData.filter(item => item._id === this.currentPro)[0];
+        },
     },
     methods: {
         queryData() {
@@ -84,10 +91,11 @@ export default {
             ::v-deep {
                 .el-input__inner{
                     border-radius: 0;
-                    border-left: none;
-                    border-top: none;
-                    border-right: none;
-                    // border: none;
+                    // border-left: none;
+                    // border-top: none;
+                    // border-right: none;
+                    border: none;
+                    padding-left: 42px;
                 }
             }
         }
