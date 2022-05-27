@@ -10,7 +10,7 @@ export default {
     component: () => import(/*webpackChunkName: 'pc-teamwork'*/ '@layout/frame'),
     children: [
         project,
-        task,
+        ...task,
         taskReport,
         home,
         file,

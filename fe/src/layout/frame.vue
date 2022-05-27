@@ -50,9 +50,14 @@ export default {
                     icon: 'el-icon-s-management',
                 },
                 {
+                    title: '活跃任务',
+                    path: '/teamwork/task',
+                    icon: 'el-icon-document',
+                },
+                {
                     title: '归档数据',
                     path: '/teamwork/file',
-                    icon: 'el-icon-document',
+                    icon: 'el-icon-document-checked',
                 },
             ],
         }

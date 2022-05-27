@@ -60,17 +60,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .task-con{
-        height: 100%;
-        overflow-x: auto;
-        white-space: nowrap;
-
-        .groups{
-            height: 100%;
-
-            .group-dragger {
-                height: 100%;
-            }
-        }
-    }
+    @import './style/groups.scss';
 </style>

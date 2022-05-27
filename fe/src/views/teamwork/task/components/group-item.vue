@@ -1,5 +1,5 @@
 <template>
-    <div class="group-item">
+    <div class="group-item" :class="{state}">
         <card 
         class="head"
         @contextmenu.prevent.native="contextMenuHandler"
@@ -19,7 +19,9 @@
                 v-else
                 class="title"
                 >
+                    <div class="dot-state" :style="{background:stateColor,}"></div>
                     {{stateTitle}}
+                    ({{data.task.length}})
                 </div>
 
                 <el-tooltip 
@@ -54,7 +56,7 @@
             </div>
         </card>
 
-        <div class="body" :class="{empty: !data.task || !data.task.length, state,}">
+        <div class="body" :class="{empty: !data.task || !data.task.length,}">
             <draggable 
             v-model="data.task" 
             group="tasks"
@@ -65,6 +67,7 @@
                     :key="index"
                     :data="item"
                     @reload="$emit('reload')"
+                    :proinfo="proinfo"
                 ></task-item>
             </draggable>
         </div>
@@ -125,6 +128,10 @@ export default {
             }),
         },
         state: {
+            type: [Boolean, String, Number],
+            default: false,
+        },
+        proinfo: {
             type: Boolean,
             default: false,
         },
@@ -167,6 +174,9 @@ export default {
         },
         stateTitle() {
             return STATE_CONFIG[this.data.state].text;
+        },
+        stateColor() {
+            return STATE_CONFIG[this.data.state].color;
         },
     },
     methods: {
@@ -332,10 +342,6 @@ export default {
         & > .body{
             max-height: calc(100% - 120px);
             overflow-y: auto;
-
-            &.state{
-                max-height: calc(100% - 60px);
-            }
         }
 
         & > .foot{
@@ -347,6 +353,30 @@ export default {
 
             &.empty{
                 margin-top: 0;
+            }
+        }
+
+        &.state {
+            & > .head{
+                cursor: default;
+
+                .left{
+                    .title {
+                        display: block;
+
+                        .dot-state{
+                            display: inline-block;
+                            width: 10px;
+                            height: 10px;
+                            border-radius: 50%;
+                            margin-right: 4px;
+                        }
+                    }
+                }
+            }
+
+            & > .body{
+                max-height: calc(100% - 60px);
             }
         }
     }

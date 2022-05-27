@@ -5,6 +5,12 @@
     @contextmenu.prevent.native="contextMenuHandler"
     >
         <div class="title">
+            <pro-info-icon
+                v-if="proinfo"
+                class="icon"
+                :data="data.procode"
+            ></pro-info-icon>
+
             <div class="text">
                 {{data.title}}
             </div>
@@ -65,6 +71,7 @@ import PeopleEditor from '../../project/components/people-editor';
 import DropdownMenu from '@components-sys/dropdown-menu';
 import FormPage from '../form';
 import FormPageTaskReport from '../../task-report/form';
+import ProInfoIcon from './pro-info-icon';
 
 export default {
     mixins: [DIALOG_LIST_MIXIN],
@@ -75,11 +82,16 @@ export default {
         DropdownMenu,
         FormPage,
         FormPageTaskReport,
+        ProInfoIcon,
     },
     props: {
         data: {
             type: Object,
             default: () => ({}),
+        },
+        proinfo: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
@@ -259,13 +271,20 @@ export default {
         .title{
             display: flex;
 
+            .icon{
+                margin-right: 6px;
+            }
+
             .text{
+                display: flex;
+                align-items: center;
                 flex: 1;
                 white-space: break-spaces;
             }
 
             .dropdown{
-
+                display: flex;
+                margin-left: 6px;
             }
         }
     }

@@ -1,12 +1,14 @@
 <template>
     <div>
         <el-row :gutter="10" class="row">
-            <el-card>
-                <hotspot-map
-                    :data="hmData"
-                    :range="hmRange"
-                ></hotspot-map>
-            </el-card>
+            <el-col :span="24">
+                <el-card>
+                    <hotspot-map
+                        :data="hmData"
+                        :range="hmRange"
+                    ></hotspot-map>
+                </el-card>
+            </el-col>
         </el-row>
 
         <el-row :gutter="10" class="row">
@@ -34,7 +36,7 @@
                     :data="tableData"
                     height="608px"
                     >
-                        <el-table-column label="成员" width="120px">
+                        <el-table-column label="成员" width="80px">
                             <template slot-scope="scope">
                                 {{scope.row.member.name}}
                             </template>
@@ -46,10 +48,16 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="工作日" prop="reporttime" width="120px"></el-table-column>
-                        <el-table-column label="工时" prop="tasktime" width="80px"></el-table-column>
+                        <el-table-column label="工作日" prop="reporttime" width="100px"></el-table-column>
+                        <el-table-column label="工时" prop="tasktime" width="60px"></el-table-column>
 
-                        <el-table-column label="操作" width="100px">
+                        <el-table-column label="内容">
+                            <template slot-scope="scope">
+                                {{scope.row.detail || '-'}}
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column label="操作" width="80px">
                             <template slot-scope="scope">
                                 <el-button type="text" icon="el-icon-edit" @click="editHandler(scope.row)">编辑</el-button>
                             </template>

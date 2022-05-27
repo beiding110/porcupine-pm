@@ -1,38 +1,25 @@
 <template>
     <div class="task-con">
         <div class="groups">
-            <draggable 
-            v-model="tableData" 
-            group="groups"
-            class="group-dragger"
-            @change="groupDragHandler"
-            >
-                <group-item 
-                    v-for="(item, index) in tableData" 
-                    :key="index"
-                    :data="item"
-                    @reload="queryData"
-                    @taskdrag="taskDragHandler"
-                ></group-item>
-            </draggable>
+            <group-item 
+                v-for="(item, index) in tableData" 
+                :key="index"
+                :data="item"
+                :state="item.state"
+                @reload="queryData"
+                @taskdrag="taskDragHandler"
+                proinfo
+            ></group-item>
         </div>
-
-        <group-add
-            @reload="queryData"
-        ></group-add>
     </div>
 </template>
 
 <script>
 import GroupItem from './components/group-item';
-import GroupAdd from './components/group-add';
-import Draggable from 'vuedraggable';
 
 export default {
     components: {
         GroupItem,
-        GroupAdd,
-        Draggable,
     },
     data() {
         return {
@@ -43,21 +30,9 @@ export default {
     },
     methods: {
         queryData() {
-            this.$get('/taskgroup/list', {
-                procode: this.$route.params.procode,
-            }, data => {
+            this.$get('/task/list-state', data => {
                 this.tableData = data;
             });
-        },
-        groupDragHandler() {
-            this.$post('/taskgroup/updateorder', this.tableData.map((item, index) => {
-                return {
-                    _id: item._id,
-                    order: index,
-                };
-            }), () => {
-
-            }, true);
         },
         taskDragHandler() {
             if (this.taskUpdateLock) {
@@ -67,9 +42,8 @@ export default {
             this.taskUpdateLock = true;
 
             this.tableData.forEach(group => {
-                group.task.forEach((item, index) => {
-                    item.order = index;
-                    item.groupcode = group._id;
+                group.task.forEach((item) => {
+                    item.state = group.state;
                 });
             });
             
@@ -85,18 +59,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .task-con{
-        height: 100%;
-        overflow-x: auto;
-        white-space: nowrap;
-
-        .groups{
-            float: left;
-            height: 100%;
-
-            .group-dragger {
-                height: 100%;
-            }
-        }
-    }
+    @import './style/groups.scss';
 </style>
