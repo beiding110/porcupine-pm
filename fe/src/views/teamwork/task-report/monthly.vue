@@ -29,7 +29,7 @@
                     <div 
                         v-for="(report, index) in scope.row[col._id]" 
                         :key="index"
-                        v-html="report.detail || report.proname"
+                        v-html="contentBuilder(report)"
                     ></div>
                 </template>
             </el-table-column>
@@ -64,6 +64,9 @@ export default {
                 this.cols = data.cols;
 
             });
+        },
+        contentBuilder(row) {
+            return `【${row.proname}】${row.detail || '-'}`
         },
     },
     mounted() {

@@ -110,10 +110,17 @@ export default {
                     text: '上报工时',
                     command: 'report',
                     handler: () => {
+                        const procode = this.data.procode._id || this.$route.params.procode;
+
+                        if (!procode) {
+                            showMsg('上报工时缺失procode');
+                            return;
+                        }
+
                         this.dialogTitle = '上报工时';
                         this.dialogComponent = 'form-page-task-report';
                         this.form = {
-                            procode: this.data.procode._id,
+                            procode,
                             taskcode: this.data._id,
                         };
                         this.dialogShow();
@@ -147,10 +154,17 @@ export default {
                     {
                         label: '上报工时',
                         onClick: () => {
+                            const procode = this.data.procode._id || this.$route.params.procode;
+
+                            if (!procode) {
+                                showMsg('上报工时缺失procode');
+                                return;
+                            }
+
                             this.dialogTitle = '上报工时';
                             this.dialogComponent = 'form-page-task-report';
                             this.form = {
-                                procode: this.data.procode._id,
+                                procode,
                                 taskcode: this.data._id,
                             };
                             this.dialogShow();
