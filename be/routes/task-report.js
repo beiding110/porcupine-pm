@@ -365,13 +365,15 @@ router.get('/monthly', function (req, res, next) {
             var dateTime = new Date(time),
                 monthTime = dateTime.getMonth();
     
-            starttime = new Date(time)
+            starttime = new Date(time);
             starttime.setDate(1);
+            starttime.setHours(0, 0, 0, 0);
             starttime = starttime.getTime();
     
-            endtime = new Date(time)
+            endtime = new Date(time);
             endtime.setMonth(monthTime + 1);
-            endtime.setDate(1);
+            endtime.setDate(0);
+            endtime.setHours(0, 0, 0, 0);
             endtime = endtime.getTime();
     
             search = {
@@ -391,6 +393,22 @@ router.get('/monthly', function (req, res, next) {
             next();
         });
     }).link(next => {
+        TaskReport.populate(reportData, [
+            {
+                path: 'taskcode',
+            },
+        ], (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+
+            next();
+        });
+    }).link(next => {
         var members = [],
             dates = [];
 
@@ -405,6 +423,7 @@ router.get('/monthly', function (req, res, next) {
                 newItem = {
                     detail: report.detail,
                     proname: report.procode.proname,
+                    taskname: report.taskcode.title,
                 };
 
             if (!dates.some((day, di) => {
