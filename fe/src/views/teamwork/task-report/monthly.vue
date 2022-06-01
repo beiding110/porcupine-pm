@@ -66,7 +66,7 @@ export default {
             });
         },
         contentBuilder(row) {
-            return `【${row.proname}】${row.detail || '-'}`
+            return `【${row.proname}】${row.detail || row.taskname}`
         },
     },
     mounted() {
