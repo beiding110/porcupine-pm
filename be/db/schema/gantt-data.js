@@ -31,6 +31,11 @@ let data = {
         type: String,
         default: '',
     },
+
+    type: {
+        type: String,
+        default: 'task',
+    },
     
     procode: {
         type: Schema.Types.ObjectId,

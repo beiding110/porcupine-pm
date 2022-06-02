@@ -1,5 +1,5 @@
 <template>
-    <div class="container-gantt">
+    <div class="container-gantt" v-loading.sync="loadingController">
         <div class="toolbar" v-if="!readonly">
             <el-dropdown @command="handleCommand" trigger="click">
                 <el-button size="mini">文件</el-button>
@@ -36,7 +36,7 @@
 
         <div ref="gantt" :style="{height:innerHeight}" class="gantt"></div>
 
-        <my-dialog v-model="dialogVisible" title="上传文件" width="400px" v-loading.sync="loadingController">
+        <my-dialog v-model="dialogVisible" title="上传文件" width="400px">
             <el-upload
             ref="upload"
             drag
@@ -56,14 +56,18 @@
 </template>
 
 <script>
-import gantt from '@js/gantt/dhtmlxgantt.js';
-import '@js/gantt/dhtmlxgantt.css';
+import { gantt } from 'dhtmlx-gantt';
+import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
 
-import '@js/gantt/locale/locale_cn.js'
-import '@js/gantt/ext/dhtmlxgantt_tooltip.js'
-import '@js/gantt/ext/dhtmlxgantt_undo.js'
-import '@js/gantt/ext/dhtmlxgantt_fullscreen.js'
 import '@js/gantt/api.js'
+
+gantt.plugins({ 
+    tooltip: true,
+    fullscreen: true,
+    undo: true,
+}); 
+
+gantt.i18n.setLocale('cn');
 
 export default {
     props: {
@@ -126,7 +130,11 @@ export default {
     },
     watch: {
         data: {
-            handler: function() {
+            handler: function(n, o) {
+                if (n === o) {
+                    return;
+                }
+
                 this.parse();
             }, deep: true
         }
@@ -218,6 +226,18 @@ export default {
                             gantt.config.duration_unit = project.config.duration_unit;
                         }
 
+                        arrBuildTree(project.data.data, 'parent', 'id');
+
+                        project.data.data.forEach(item => {
+                            if (item.children) {
+                                item.type = 'project';
+                            }
+
+                            if (item.duration === '0') {
+                                item.type = 'milestone';
+                            }
+                        });
+
                         gantt.parse(project.data);
                     }
 
@@ -268,6 +288,9 @@ export default {
                         var itemInDataSet = obj[index][key];
                         arrItem[key] = (getType(itemInDataSet) === 'date') ? itemInDataSet.pattern('yyyy-MM-dd HH:mm:ss') : itemInDataSet;
                     });
+
+                    arrItem.type = arrItem.$rendered_type;
+
                     arr.push(arrItem);
                 }
 
