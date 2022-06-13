@@ -86,6 +86,11 @@ export default {
             callback();
         },
         useridRules(rule, value, callback) {
+            if (!value) {
+                callback();
+                return;
+            }
+            
             this.$post('/user/checkexistbyid', {
                 userid: value,
             }, data => {

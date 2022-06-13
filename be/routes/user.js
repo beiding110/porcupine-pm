@@ -62,9 +62,14 @@ router.post('/checkexistbyid', function (req, res, next) {
     const {userid} = req.body,
         {ppm_userid} = req.cookies;
 
-    User.findById(userid, (err, data) => {
+    User.exists({
+        _id: userid,
+    }, (err, data) => {
         if (err) {
             tdata = resFrame('error', '', err);
+            tdata.code = 'v';
+            tdata.tbody = false;
+
             res.send(tdata);
             return false;
         }

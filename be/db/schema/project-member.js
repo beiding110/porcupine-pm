@@ -14,8 +14,8 @@ let data = {
         default: '',
     },
     userid: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
+        type: String,
+        default: '',
     },
 
     adduser: String,
