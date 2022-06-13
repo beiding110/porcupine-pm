@@ -63,4 +63,45 @@ router.get('/list', function (req, res, next) {
     }
 });
 
+router.post('/form', function (req, res, next) {
+    const form = req.body,
+        {ppm_userid} = req.cookies;
+
+    var tdata;
+
+    if (form._id) {
+        // 编辑
+
+        // 更新项目信息
+        ProjectMember.findByIdAndUpdate(form._id, form, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+    
+            tdata = resFrame(data);
+            res.send(tdata);
+        });
+        
+    } else {
+        // 新增
+
+        form.adduser = ppm_userid;
+        form.addtime = app.getTime();
+
+        // 存储项目信息
+        ProjectMember.create(form, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            tdata = resFrame(data);
+            res.send(tdata);
+        });
+    }
+});
+
 module.exports = router;

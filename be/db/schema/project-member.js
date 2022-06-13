@@ -9,6 +9,14 @@ let data = {
         type: Schema.Types.ObjectId,
         ref: 'project'
     },
+    detail: {
+        type: String,
+        default: '',
+    },
+    userid: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+    },
 
     adduser: String,
     addtime: String,

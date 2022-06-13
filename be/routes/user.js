@@ -58,4 +58,27 @@ router.post('/login', function (req, res, next) {
     });
 });
 
+router.post('/checkexistbyid', function (req, res, next) {
+    const {userid} = req.body,
+        {ppm_userid} = req.cookies;
+
+    User.findById(userid, (err, data) => {
+        if (err) {
+            tdata = resFrame('error', '', err);
+            res.send(tdata);
+            return false;
+        }
+
+        if (!data) {
+            tdata = resFrame(false);
+            res.send(tdata);
+            return false;
+        }
+
+        tdata = resFrame(true);
+        res.send(tdata)
+    });
+});
+
+
 module.exports = router;

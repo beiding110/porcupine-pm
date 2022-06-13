@@ -64,6 +64,11 @@ export default {
                     path: '/teamwork/file',
                     icon: 'el-icon-document-checked',
                 },
+                {
+                    title: '设置管理',
+                    path: '/teamwork/settings',
+                    icon: 'el-icon-setting',
+                },
             ],
         }
     },
