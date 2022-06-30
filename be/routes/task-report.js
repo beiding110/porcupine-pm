@@ -373,7 +373,7 @@ router.get('/monthly', function (req, res, next) {
             endtime = new Date(time);
             endtime.setMonth(monthTime + 1);
             endtime.setDate(0);
-            endtime.setHours(0, 0, 0, 0);
+            endtime.setHours(23, 59, 59, 0);
             endtime = endtime.getTime();
     
             search = {
