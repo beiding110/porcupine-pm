@@ -1,0 +1,27 @@
+{
+    "name": "tou-biao-e",
+    "productName": "por-pm",
+    "description": "por-pm项目管理工具",
+    "keywords": [],
+    "main": "./main.js",
+    "version": "0.1.0",
+    "author": "yzh",
+    "build": {
+        "appId": "com.tbez.app",
+        "win": {
+            "target": "nsis",
+            "icon": "./render/public/static/256.png"
+        }
+    },
+    "scripts": {
+        "start": "(set NODE_ENV=development) && electron .",
+        "build:win": "(set NODE_ENV=production) && electron-builder --win --ia32"
+    },
+    "dependencies": {
+        "@electron/remote": "2.0.8"
+    },
+    "devDependencies": {
+        "electron": "19.0.4",
+        "electron-builder": "^23.0.3"
+    }
+}
