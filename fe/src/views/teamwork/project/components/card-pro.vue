@@ -50,7 +50,7 @@ export default {
                     text: '工时统计',
                     command: 'taskreport',
                     handler: () => {
-                        this.goto(`/teamwork/${this.data._id}/taskreport/list`);
+                        this.goto(`/teamwork/${this.data._id}/taskreport`);
                     },
                 },
                 {
