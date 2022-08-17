@@ -89,7 +89,7 @@ export default {
                     {
                         label: '工时统计',
                         onClick: () => {
-                            this.goto(`/teamwork/${this.data._id}/taskreport/list`);
+                            this.goto(`/teamwork/${this.data._id}/taskreport`);
                         },
                     },
                     {
