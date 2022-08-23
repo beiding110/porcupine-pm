@@ -94,7 +94,8 @@ export default {
                     left: 'center',
                 },
                 tooltip: {
-                    trigger: 'item'
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)',
                 },
                 legend: {
                     orient: 'vertical',
