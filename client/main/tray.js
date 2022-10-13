@@ -1,16 +1,23 @@
 var { Menu, Tray, BrowserWindow, app } = require('electron');
 var path = require('path');
+var {version, productName} = require('../package.json');
 
-const package = require('../package.json');
+const checkUpdate = require('./update.js');
  
 // 创建拖盘
 var iconTray = new Tray(path.join(__dirname, '../render/public/static/256.png'));
  
 // 鼠标悬停托盘提示
-iconTray.setToolTip(package.productName);
+iconTray.setToolTip(productName);
  
 // 配置右键菜单
 var trayMenu = Menu.buildFromTemplate([
+    // {
+    //     label: `检查更新(${version})`,
+    //     click: function () {
+    //         checkUpdate();
+    //     },
+    // },
     {
         label: '退出',
         click: function () {

@@ -4,6 +4,7 @@ const { app, BrowserWindow, Menu } = require('electron');
 const windowFeatures = require('./utils/windowFeatures');
 
 const bWindow = require('./main/window.js');
+// const checkUpdate = require('./main/update.js');
 
 app.commandLine.appendSwitch('force_high_performance_gpu');
 // app.disableHardwareAcceleration();
@@ -36,6 +37,8 @@ if (!gotTheLock) {
         bWindow.create();
 
         require('./main/tray.js');
+
+        // checkUpdate();
 
         app.on('activate', function () {
             // On macOS it's common to re-create a window in the app when the

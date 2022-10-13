@@ -11,14 +11,21 @@
         "win": {
             "target": "nsis",
             "icon": "./render/public/static/256.png"
-        }
+        },
+        "publish": [
+            {
+                "provider": "generic",
+                "url": "http://"
+            }
+        ]
     },
     "scripts": {
         "start": "(set NODE_ENV=development) && electron .",
         "build:win": "(set NODE_ENV=production) && cd render && npm run build && cd .. && electron-builder --win --ia32"
     },
     "dependencies": {
-        "@electron/remote": "2.0.8"
+        "@electron/remote": "2.0.8",
+        "electron-updater": "^5.3.0"
     },
     "devDependencies": {
         "electron": "19.0.4",
