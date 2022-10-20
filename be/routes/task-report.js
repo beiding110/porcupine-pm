@@ -354,6 +354,184 @@ router.get('/hotmapbyproject', function (req, res, next) {
     }).run();
 });
 
+/**
+ * 人员-项目占用情况
+ */
+router.get('/pppercent', function (req, res, next) {
+    const {starttime, endtime, member} = req.query,
+        {ppm_userid} = req.cookies;
+
+    var projectData,
+        reportData,
+        activeProjects, // 实际日志的项目
+        rows;
+
+    new Chain().link(next => {
+        // 取当前用户的项目
+
+        Project.getUsersPro(ppm_userid, true, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            projectData = data;
+    
+            next();
+        });
+    }).link(next => {
+        // 取当前用户在时间范围内项目的日志上报情况
+
+        function whereFac() {
+            var start = new Date(starttime).getTime(),
+                end = new Date(endtime).getTime() + 86400000;
+
+            return `new Date(this['reporttime']).getTime() >= ${start} && new Date(this['reporttime']).getTime() < ${end}`;
+        }
+
+        var search = {
+            procode: {
+                $in: projectData.map(item => item._id),
+            },
+            $where: whereFac(),
+        };
+
+        if (member) {
+            search.member = member;
+        }
+            
+        TaskReport.find(search, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+
+            next();
+        });
+    }).link(next => {
+        // 关联日志的添加人和项目信息
+
+        TaskReport.populate(reportData, [
+            {
+                path: 'member',
+            },
+            {
+                path: 'procode',
+            },
+        ], (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+
+            next();
+        });
+    }).link(next => {
+        // 获取实际有日志的项目
+
+        activeProjects = reportData.reduce((proArr, report) => {
+            if (!proArr.some(pro => {
+                return pro.id === report.procode.id;
+            })) {
+                // 不存在
+
+                proArr.push(report.procode);
+            }
+
+            return proArr;
+        }, []);
+
+        next();
+    }).link(next => {
+        // 构建用户与工时的关联关系
+
+        rows = reportData.reduce((memberArr, item) => {
+            var project = item.procode,
+                member = item.member,
+                indexInArr;
+
+            if (!memberArr.some((mem, existIndex) => {
+                if (mem.id === member.id) {
+                    indexInArr = existIndex;
+    
+                    return true;
+                }
+    
+                return false;
+            })){
+                // 数组中不存在这个人员
+
+                memberArr.push({
+                    name: member.name,
+                    id: member.id,
+                    sum: item.tasktime,
+                    project: activeProjects.map(pro => {
+                        let sum = 0;
+
+                        if (pro.id === project.id) {
+                            sum = item.tasktime
+                        }
+
+                        return {
+                            name: pro.proname,
+                            id: pro.id,
+                            sum,
+                        }
+                    }),
+                });
+            } else {
+                // 数组中已经存在这个人员
+
+                var existMemberinfo = memberArr[indexInArr],
+                    existProIndex;
+
+                existMemberinfo.sum += item.tasktime;
+
+                existProIndex = existMemberinfo.project.findIndex(pro => {
+                    return pro.id === item.procode.id;
+                });
+
+                existMemberinfo.project[existProIndex].sum += item.tasktime;
+            }
+
+            return memberArr;
+        }, []);
+
+        next();
+    }).link(next => {
+        // 计算比例
+        rows.forEach(member => {
+            member.project.forEach(project => {
+                if (member.sum) {
+                    // 用户总工时不为0
+
+                    project.normalize = Number((project.sum / member.sum).toFixed(2));
+
+                    project.percent = parseInt(project.normalize * 100) + '%';
+
+                    return;
+                }
+
+                project.normalize = 0;
+            });
+        });
+
+        tdata = resFrame({
+            row: rows,
+            col: activeProjects,
+        });
+
+        res.send(tdata);
+    }).run();
+});
+
 router.get('/monthly', function (req, res, next) {
     const {time} = req.query,
         {ppm_userid} = req.cookies;

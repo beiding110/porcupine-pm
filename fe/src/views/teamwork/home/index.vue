@@ -12,6 +12,8 @@
         </el-row>
 
         <hotspot-map class="com-item"></hotspot-map>
+
+        <table-ppp class="com-item"></table-ppp>
     </div>
 </template>
 
@@ -19,12 +21,14 @@
 import CascaderAllMember from '../task-report/components/cascader-all-member';
 import HotspotMap from './components/hotspot-map';
 import TaskAlive from './components/task-alive';
+import TablePpp from './components/table-ppp';
 
 export default {
     components: {
         CascaderAllMember,
         HotspotMap,
         TaskAlive,
+        TablePpp,
     },
     data() {
         return {
