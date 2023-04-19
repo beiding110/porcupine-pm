@@ -3,7 +3,7 @@ const remote = require('@electron/remote/main');
 
 const windowFeatures = require('../utils/windowFeatures');
 
-const {bwUrl} = require('../config/main');
+const {bwUrl, hostname} = require('../config/main');
 
 const view = require('./view.js');
 
@@ -17,8 +17,16 @@ MainWindow.prototype = {
     init() {
         this.$window = null;
         this.$webContents = null;
+
+        this._onshow = null
     },
-    create() {
+
+    /**
+     * 创建window
+     * @param {String} url window加载的地址
+     * @param {Function} onshow 界面展示时的回调
+     */
+    create(url = bwUrl, onshow) {
         // Create the browser window.
         var wf = windowFeatures();
 
@@ -28,7 +36,7 @@ MainWindow.prototype = {
         this.$webContents = this.$window.webContents;
 
         // and load the index.html of the app.
-        this.$window.loadURL(bwUrl);
+        this.$window.loadURL(url);
 
         // Open the DevTools.
         if (process.env.NODE_ENV === 'development') {
@@ -37,10 +45,16 @@ MainWindow.prototype = {
 
         remote.enable(this.$window.webContents);
 
+        this._onshow = onshow;
+
         this.createView();
 
         this.bindEvent();
     },
+
+    /**
+     * 绑定事件
+     */
     bindEvent() {
         this.$window.on('maximize', () => {
             this.$window.webContents.send('maximize');
@@ -49,7 +63,45 @@ MainWindow.prototype = {
         this.$window.on('unmaximize', () => {
             this.$window.webContents.send('unmaximize');
         });
+
+        this.$window.once('ready-to-show', () => {
+            if (this._onshow) {
+                this._onshow();
+            }
+
+            this.$window.show();
+        });
+
+        this.$window.webContents.setWindowOpenHandler(({url}) => {
+
+            let wf = windowFeatures(),
+                reg = new RegExp(hostname);
+
+            if (reg.test(url)) {
+                // 本产品的
+                wf.frame = false;
+
+                new MainWindow().create(url);
+
+                return {
+                    action: 'deny',
+                    overrideBrowserWindowOptions: wf,
+                }
+            }
+
+            delete wf.webPreferences;
+            wf.show = true;
+
+            return {
+                action: 'allow',
+                overrideBrowserWindowOptions: wf,
+            }
+        });
     },
+
+    /**
+     * 给当前window绑定view
+     */
     createView() {
         view.create();
 

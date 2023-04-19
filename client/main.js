@@ -4,7 +4,7 @@ const { app, BrowserWindow, Menu } = require('electron');
 const windowFeatures = require('./utils/windowFeatures');
 
 const bWindow = require('./main/window.js');
-// const checkUpdate = require('./main/update.js');
+const startPage = require('./main/start-page.js');
 
 app.commandLine.appendSwitch('force_high_performance_gpu');
 // app.disableHardwareAcceleration();
@@ -12,6 +12,11 @@ app.commandLine.appendSwitch('force_high_performance_gpu');
 Menu.setApplicationMenu(null);
 
 const gotTheLock = app.requestSingleInstanceLock();
+
+if (process.platform === 'win32'){
+    // 避免弹窗提示时展示非app名称；
+    app.setAppUserModelId(app.name);
+}
 
 if (!gotTheLock) {
     // 第二次被打开的程序
@@ -34,11 +39,25 @@ if (!gotTheLock) {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(() => {
-        bWindow.create();
+        // 创建启动页
+        startPage.create();
 
+        // 创建主界面
+        bWindow.create(undefined, () => {
+            //主界面显示时，关闭启动页
+            startPage.destroy();
+        });
+
+        // 任务栏图标
         require('./main/tray.js');
 
-        // checkUpdate();
+        // ipc
+        require('./main/ipc.js');
+
+        // 自动更新
+        // const checkUpdate = require('./main/update.js');
+
+        // checkUpdate(true);
 
         app.on('activate', function () {
             // On macOS it's common to re-create a window in the app when the
@@ -69,5 +88,3 @@ if (!gotTheLock) {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-
-require('./main/ipc.js');
