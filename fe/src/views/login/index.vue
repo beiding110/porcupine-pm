@@ -48,6 +48,8 @@
 <script>
 import logo from '@assets/logo.png';
 
+import * as Cookies from "js-cookie";
+
 export default {
     data: () => ({
         form: {
@@ -63,9 +65,18 @@ export default {
             this.$store.dispatch('login', this.form);
         }
     },
+    beforeRouteEnter (to, from, next) {
+        var session = Cookies.get('ppm_userid');
+
+        if (session) {
+            next('/teamwork/index');
+        }
+
+        next();
+    },
     mounted() {
 
-    }
+    },
 }
 </script>
 
