@@ -31,56 +31,23 @@ let data = {
 
 var dataSchema = Schema(data);
 
-dataSchema.statics.getAllByUser = function(userid, search, cb) {
-    var projectData,
-        reportData;
-
-    new Chain().link(next => {
-        Project.getUsersPro(userid, true, (err, data) => {
-            if (err) {
-                cb(err);
-                return false;
-            }
-
-            projectData = data;
-    
-            next()
-        });
-    }).link(next => {
-        this.find({
+dataSchema.statics.getAllByUser = async function(userid, search) {
+    var projectData = await Project.getUsersPro(userid, true),
+        reportData = await this.find({
             procode: {
                 $in: projectData.map(item => item._id),
             },
             ...search
-        }, (err, data) => {
-            if (err) {
-                cb(err);
-            }
-
-            reportData = data;
-
-            next();
-        });
-    }).link(next => {
-        this.populate(reportData, [
+        }).populate([
             {
                 path: 'member',
             },
             {
                 path: 'procode',
             },
-        ], (err, data) => {
-            if (err) {
-                cb(err);
-            }
-
-            reportData = data;
-
-            next();
-        });
-    }).link(next => {
-        cb(null, reportData);
-    }).run();
+        ]);
+        
+    return reportData;
 };
 
 dataSchema.statics.buildByProject = function(arr, cb) {

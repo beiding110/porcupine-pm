@@ -4,57 +4,83 @@ var router = express.Router();
 const resFrame = require('../utils/resFrame');
 const app = require('../utils/app');
 
+const Project = require('../db/schema/project');
+const ProjectMember = require('../db/schema/project-member');
 const TaskGroup = require('../db/schema/task-group');
 const Task = require('../db/schema/task');
-const Chain = require('../utils/Chain');
+const OrderGroup = require('../db/schema/order-group');
+const User = require('../db/schema/user.js');
 
 const isLogin = require('../middleware/is-login');
 router.use(isLogin);
 
-router.get('/list', function (req, res, next) {
-    const {title, procode} = req.query,
-        {ppm_userid} = req.cookies;
+router.get('/list', async function (req, res, next) {
+    var tdata;
 
-    var search = {
-        adduser: ppm_userid,
-        scbj: {
-            $ne: 1,
-        },
-    };
+    try {
+        const {title, procode} = req.query,
+            {ppm_userid} = req.cookies;
 
-    if (title) {
-        search.title = {
-            $regex: new RegExp(title, 'i'),
-        };
-    }
+        const level = await User.getLevel(ppm_userid); // 当前用户的权限等级
 
-    if (procode) {
-        search.procode = procode;
-    }
+        var groupSearch = {
+                scbj: {
+                    $ne: 1,
+                },
+            },
+            taskSearch = {};
 
-    var groupData,
-        groupWithTaskData;
+        if (title) {
+            groupSearch.title = {
+                $regex: new RegExp(title, 'i'),
+            };
+        }
 
-    new Chain().link(next => {
-        TaskGroup.find(search, null, {
+        if (procode) {
+            groupSearch.procode = procode;
+        } else {
+            let usersPro = await Project.getUsersPro(ppm_userid);
+
+            groupSearch.procode = usersPro.map(item => item.id);
+        }
+
+        if (level === 'A') {
+            // 组织下全部的
+            let usersPro = await Project.getUsersPro(ppm_userid);
+
+            // 组织内全部的
+            taskSearch.procode = usersPro.map(item => item.id);
+        } else if (level === 'M') {
+            // 本人创建的项目的和本人参与的
+
+            let userCreatedPro = await Project.find({
+                    adduser: ppm_userid,
+                }),
+                userInPM = await ProjectMember.getUserInProMember(ppm_userid);
+
+            taskSearch['$or'] = [
+                {
+                    procode: userCreatedPro.map(item => item.id),
+                },
+                {
+                    member: userInPM.id,
+                }
+            ];
+        } else {
+            // 只能看人员里有自己的
+            var userInPM = await ProjectMember.getUserInProMember(ppm_userid);
+
+            taskSearch.member = userInPM.id;
+        }
+
+        var groupWithTaskData = await TaskGroup.find(groupSearch, null, {
             sort: {
                 order: 1,
                 addtime: 1,
             },
-        }, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            groupData = data;
-
-            next();
-        });
-    }).link(next => {
-        TaskGroup.populate(groupData, {
+        }).populate({
             path: 'task',
+            match: taskSearch,
             options: {
                 order: 1,
                 addtime: 1,
@@ -62,21 +88,21 @@ router.get('/list', function (req, res, next) {
             populate: {
                 path: 'member',
             },
-        }, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            groupWithTaskData = data;
-
-            next();
         });
-    }).link(next => {
-        tdata = resFrame(groupWithTaskData);
+
+        // 排序
+        var listWithOrder = await OrderGroup.bindOrder(ppm_userid, 'task-group', groupWithTaskData);
+
+        listWithOrder.forEach(async group => {
+            group.task = await OrderGroup.bindOrder(ppm_userid, 'task', groupWithTaskData);
+        });
+
+        tdata = resFrame(listWithOrder);
         res.send(tdata);
-    }).run();
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 router.post('/form', function (req, res, next) {
@@ -151,22 +177,21 @@ router.post('/del', function (req, res, next) {
     });
 });
 
-router.post('/updateorder', function (req, res, next) {
-    const orderArr = req.body,
-        {ppm_userid} = req.cookies;
-
+router.post('/updateorder', async function (req, res, next) {
     var tdata;
 
-    TaskGroup.updateOrder(orderArr, (err, data) => {
-        if (err) {
-            tdata = resFrame('error', '', err);
-            res.send(tdata);
-            return false;
-        }
+    try {
+        const orderArr = req.body,
+            {ppm_userid} = req.cookies;
+
+        var data = await OrderGroup.updateOrder(ppm_userid, 'task-group', orderArr);
 
         tdata = resFrame(data);
         res.send(tdata);
-    });
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 module.exports = router;

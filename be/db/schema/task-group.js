@@ -114,7 +114,7 @@ dataSchema.statics.updateOrder = function(arr, cb) {
 };
 
 // 更新顺序
-dataSchema.statics.updateTaskId = function(arr, cb) {
+dataSchema.statics.updateTaskId = async function(arr) {
     var bwArr = arr.map(item => {
         return {
             updateOne: {
@@ -128,14 +128,9 @@ dataSchema.statics.updateTaskId = function(arr, cb) {
         };
     });
 
-    this.bulkWrite(bwArr, (err, data) => {
-        if (err) {
-            cb && cb(err);
-            return;
-        }
+    var data = await this.bulkWrite(bwArr);
 
-        cb && cb(null, data);
-    });
+    return data;
 };
 
 // 批量更新group中的task关联关系

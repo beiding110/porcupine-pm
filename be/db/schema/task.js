@@ -37,38 +37,13 @@ let data = {
 
 var dataSchema = Schema(data);
 
-dataSchema.statics.getRow = function(taskcode, cb) {
-    var taskData,
-        taskWithMemberData;
+dataSchema.statics.getRow = async function(taskcode) {
+    var taskWithMemberData = await this.findById(taskcode).populate('member');
 
-    new Chain().link(next => {
-        this.findById(taskcode, (err, data) => {
-            if (err) {
-                cb && cb(err);
-                return;
-            }
-
-            taskData = data;
-    
-            next();
-        });
-    }).link(next => {
-        this.populate(taskData, 'member', (err, data) => {
-            if (err) {
-                cb && cb(err);
-                return;
-            }
-
-            taskWithMemberData = data;
-
-            next();
-        });
-    }).link(next => {
-        cb && cb(null, taskWithMemberData);
-    }).run();
+    return taskWithMemberData;
 }
 
-dataSchema.statics.getList = function(search, sort, cb) {
+dataSchema.statics.getList = async function(search, sort = {}) {
     var search = {
         scbj: {
             $ne: 1,
@@ -76,39 +51,18 @@ dataSchema.statics.getList = function(search, sort, cb) {
         ...search,
     };
 
-    new Chain().link(next => {
-        this.find(search, null, {
-            sort,
-        }, (err, data) => {
-            if (err) {
-                cb(err);
-                return false;
-            }
+    var data = await this.find(search, null, {
+        sort,
+    }).populate([
+        {
+            path: 'member',
+        },
+        {
+            path: 'procode',
+        },
+    ]);
 
-            taskData = data;
-    
-            next()
-        });
-    }).link(next => {
-        this.populate(taskData, [
-            {
-                path: 'member',
-            },
-            {
-                path: 'procode',
-            },
-        ], (err, data) => {
-            if (err) {
-                cb(err);
-            }
-
-            taskWithMemberData = data;
-
-            next();
-        });
-    }).link(next => {
-        cb(null, taskWithMemberData);
-    }).run();
+    return data;
 };
 
 dataSchema.statics.delRows = function(rows, cb) {
@@ -126,40 +80,6 @@ dataSchema.statics.delRows = function(rows, cb) {
         }
 
         cb && cb(err, data);
-    });
-};
-
-// 更新顺序及分组
-dataSchema.statics.updateDrag = function(groupArr, cb) {
-    var bwArr = groupArr.reduce((ba, group) => {
-        ba = [
-            ...ba,
-            ...group.task.map(item => {
-                return {
-                    updateOne: {
-                        filter: {
-                            _id: item._id,
-                        },
-                        update: {
-                            order: item.order,
-                            groupcode: item.groupcode,
-                            state: item.state,
-                        },
-                    },
-                };
-            }),
-        ]
-
-        return ba;
-    }, []);
-
-    this.bulkWrite(bwArr, (err, data) => {
-        if (err) {
-            cb && cb(err);
-            return;
-        }
-
-        cb && cb(null, data);
     });
 };
 

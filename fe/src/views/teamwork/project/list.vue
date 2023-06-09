@@ -104,9 +104,9 @@ export default {
     watch: {
         tableData: {
             handler(val) {
-                this.g0 = val.filter(item => !item.groupcode);
-                this.g1 = val.filter(item => item.groupcode === 1);
-                this.g2 = val.filter(item => item.groupcode === 2);
+                this.g0 = val.filter(item => !item.groupcode || item.groupcode === 'g0');
+                this.g1 = val.filter(item => item.groupcode === 'g1');
+                this.g2 = val.filter(item => item.groupcode === 'g2');
             }, 
             deep: true,
         },
@@ -121,11 +121,15 @@ export default {
             this.queryData();
         },
         proDragHandler() {
+            if (this.proUpdateLock) {
+                return;
+            }
+
             this.proUpdateLock = true;
 
-            ['g0', 'g1', 'g2'].forEach((key, keyIndex) => {
+            ['g0', 'g1', 'g2'].forEach((key) => {
                 this[key].forEach((item, index) => {
-                    item.groupcode = keyIndex;
+                    item.groupcode = key;
                     item.order = index;
                 });
             });

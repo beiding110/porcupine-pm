@@ -8,9 +8,36 @@ let data = {
     pwd: String,
     truename: String,
     addtime: String,
+    groupid: String,
+    level: String, // mac等级，A/M/W
 };
 
 var dataSchema = Schema(data);
+
+dataSchema.statics.getGroupId = async function (id) {
+    return new Promise((res, rej) => {
+        this.findById(id, (err, data) => {
+            if (err) {
+                rej(err);
+            }
+    
+            res(data.groupid);
+        });
+    });
+}
+
+dataSchema.statics.getLevel = async function (id) {
+    return new Promise((res, rej) => {
+        this.findById(id, (err, data) => {
+            if (err) {
+                rej(err);
+            }
+    
+            res(data.level);
+        });
+    });
+}
+
 var Data = mongoose.model('user', dataSchema);
 
 // dataSchema.methods.getTime

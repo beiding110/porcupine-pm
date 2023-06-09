@@ -6,130 +6,132 @@ const app = require('../utils/app');
 
 const TaskReport = require('../db/schema/task-report');
 const Project = require('../db/schema/project');
+const ProjectMember = require('../db/schema/project-member');
+const User = require('../db/schema/user.js');
 const Chain = require('../utils/Chain');
 
 const isLogin = require('../middleware/is-login');
 router.use(isLogin);
 
-router.get('/list', function (req, res, next) {
-    const {procode, taskcode, starttime, endtime, member} = req.query,
-        {ppm_userid} = req.cookies;
+router.get('/list', async function (req, res, next) {
+    var tdata;
 
-    var search = {
-        adduser: ppm_userid,
-        scbj: {
-            $ne: 1,
-        },
-    };
+    try {
+        const {procode, taskcode, starttime, endtime, member} = req.query,
+            {ppm_userid} = req.cookies;
 
-    if (procode) {
-        search.procode = procode;
-    }
+        var level = await User.getLevel(ppm_userid),
+            userInPM = await ProjectMember.getUserInProMember(ppm_userid),
+            search = {
+                scbj: {
+                    $ne: 1,
+                },
+            };
 
-    if (taskcode) {
-        search.taskcode = taskcode;
-    }
+        if (level === 'A') {
+            // 管理员权限，读取全部项目
+            let usersPro = await Project.getUsersPro(ppm_userid);
 
-    if (starttime && endtime) {
-        search.reporttime = {
-            $gt: starttime,
-            $lte: endtime,
-        };
-    }
+            // 组织内全部的
+            search.procode = usersPro.map(item => item.id);
+        } else if (level === 'M') {
+            // 项目经理权限，读取自己创建的或参与的
 
-    if (member) {
-        search.member = member;
-    }
+            let userCreatedPro = await Project.find({
+                adduser: ppm_userid,
+            });
 
-    var taskRepData,
-        taskRepWithMemberData;
+            search['$or'] = [
+                {
+                    procode: userCreatedPro.map(item => item.id),
+                },
+                {
+                    member: userInPM._id,
+                }
+            ];
+        } else {
+            // 仅本人参与的
+            search.member = userInPM.id;
+        }
 
-    new Chain().link(next => {
-        TaskReport.find(search, null, {
+        if (procode) {
+            search.procode = procode;
+        }
+
+        if (taskcode) {
+            search.taskcode = taskcode;
+        }
+
+        if (starttime && endtime) {
+            search.reporttime = {
+                $gt: starttime,
+                $lte: endtime,
+            };
+        }
+
+        if (member) {
+            search.member = member;
+        }
+
+        var taskRepWithMemberData = await TaskReport.find(search, null, {
             sort: {
                 reporttime: -1,
             },
-        }, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            taskRepData = data;
-
-            next();
-        });
-    }).link(next => {
-        TaskReport.populate(taskRepData, [
+        }).populate([
             {
                 path: 'member',
             },
             {
                 path: 'taskcode',
             },
-        ], (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
+        ]);
 
-            taskRepWithMemberData = data;
-
-            next();
-        });
-    }).link(next => {
         tdata = resFrame(taskRepWithMemberData);
         res.send(tdata);
-    }).run();
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
-router.get('/all', function (req, res, next) {
-    const {time} = req.query,
-        {ppm_userid} = req.cookies;
+router.get('/all', async function (req, res, next) {
+    var tdata;
 
-    var starttime,
-        endtime,
-        search = {};
+    try {
+        const {time} = req.query,
+            {ppm_userid} = req.cookies;
 
-    if(time) {
-        var dateTime = new Date(time),
-            monthTime = dateTime.getMonth();
+        var starttime,
+            endtime,
+            search = {};
 
-        starttime = new Date(time)
-        starttime.setMonth(monthTime - 1);
-        starttime.setDate(1);
-        starttime = starttime.getTime();
+        if(time) {
+            var dateTime = new Date(time),
+                monthTime = dateTime.getMonth();
 
-        endtime = new Date(time)
-        endtime.setMonth(monthTime + 2);
-        endtime.setDate(1);
-        endtime = endtime.getTime();
+            starttime = new Date(time)
+            starttime.setMonth(monthTime - 1);
+            starttime.setDate(1);
+            starttime = starttime.getTime();
 
-        search = {
-            $where: `new Date(this['reporttime']).getTime() > ${starttime} && new Date(this['reporttime']).getTime() <= ${endtime}`
-        };
-    }
+            endtime = new Date(time)
+            endtime.setMonth(monthTime + 2);
+            endtime.setDate(1);
+            endtime = endtime.getTime();
 
-    var taskReportData;
+            search = {
+                $where: `new Date(this['reporttime']).getTime() > ${starttime} && new Date(this['reporttime']).getTime() <= ${endtime}`
+            };
+        }
 
-    new Chain().link(next => {
-        TaskReport.getAllByUser(ppm_userid, search, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
+        var taskReportData = await TaskReport.getAllByUser(ppm_userid, search);
 
-            taskReportData = data;
-    
-            next();
-        });
-    }).link(next => {
         tdata = resFrame(taskReportData);
         res.send(tdata);
-    }).run();
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 router.post('/form', function (req, res, next) {
@@ -214,26 +216,14 @@ router.get('/detail', function (req, res, next) {
     }).run();
 });
 
-router.get('/hotmap', function (req, res, next) {
+router.get('/hotmap', async function (req, res, next) {
     const {starttime, endtime, member} = req.query,
         {ppm_userid} = req.cookies;
 
-    var projectData,
+    var projectData = await Project.getUsersPro(ppm_userid, true),
         reportData;
 
     new Chain().link(next => {
-        Project.getUsersPro(ppm_userid, true, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            projectData = data;
-    
-            next();
-        });
-    }).link(next => {
         function whereFac() {
             var start = new Date(starttime).getTime(),
                 end = new Date(endtime).getTime() + 86400000;
@@ -357,30 +347,16 @@ router.get('/hotmapbyproject', function (req, res, next) {
 /**
  * 人员-项目占用情况
  */
-router.get('/pppercent', function (req, res, next) {
+router.get('/pppercent', async function (req, res, next) {
     const {starttime, endtime, member} = req.query,
         {ppm_userid} = req.cookies;
 
-    var projectData,
+    var projectData = await Project.getUsersPro(ppm_userid, true),
         reportData,
         activeProjects, // 实际日志的项目
         rows;
 
     new Chain().link(next => {
-        // 取当前用户的项目
-
-        Project.getUsersPro(ppm_userid, true, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            projectData = data;
-    
-            next();
-        });
-    }).link(next => {
         // 取当前用户在时间范围内项目的日志上报情况
 
         function whereFac() {
@@ -532,13 +508,15 @@ router.get('/pppercent', function (req, res, next) {
     }).run();
 });
 
-router.get('/monthly', function (req, res, next) {
-    const {time} = req.query,
-        {ppm_userid} = req.cookies;
+router.get('/monthly', async function (req, res, next) {
+    var tdata;
 
-    var reportData;
+    try {
+        const {time} = req.query,
+            {ppm_userid} = req.cookies;
 
-    new Chain().link(next => {
+        var reportData;
+
         if(time) {
             var dateTime = new Date(time),
                 monthTime = dateTime.getMonth();
@@ -559,34 +537,13 @@ router.get('/monthly', function (req, res, next) {
             };
         }
 
-        TaskReport.getAllByUser(ppm_userid, search, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            reportData = data;
-    
-            next();
-        });
-    }).link(next => {
-        TaskReport.populate(reportData, [
+        reportData = await TaskReport.getAllByUser(ppm_userid, search);
+        reportData = await TaskReport.populate(reportData, [
             {
                 path: 'taskcode',
             },
-        ], (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
+        ]);
 
-            reportData = data;
-
-            next();
-        });
-    }).link(next => {
         var members = [],
             dates = [];
 
@@ -636,7 +593,10 @@ router.get('/monthly', function (req, res, next) {
             cols: members,
         });
         res.send(tdata);
-    }).run();
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 module.exports = router;

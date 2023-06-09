@@ -8,6 +8,9 @@ const Chain = require('../utils/Chain');
 const Task = require('../db/schema/task');
 const TaskGroup = require('../db/schema/task-group');
 const Project = require('../db/schema/project');
+const OrderGroup = require('../db/schema/order-group');
+const ProjectMember = require('../db/schema/project-member');
+const User = require('../db/schema/user.js');
 
 const isLogin = require('../middleware/is-login');
 router.use(isLogin);
@@ -49,61 +52,59 @@ router.get('/list', function (req, res, next) {
     });
 });
 
-router.get('/list-state', function (req, res, next) {
-    const {procode} = req.query,
-        {ppm_userid} = req.cookies;
+router.get('/list-state', async function (req, res, next) {
+    var tdata;
 
-    var taskData;
+    try {
+        const {procode} = req.query,
+            {ppm_userid} = req.cookies;
 
-    new Chain().link(next => {
-        if (!procode) {
-            // 没有procode，按人查
-            Project.getUsersPro(ppm_userid, false, (err, data) => {
-                if (err) {
-                    tdata = resFrame('error', '', err);
-                    res.send(tdata);
-                    return false;
-                }
-
-                Task.getList({
-                    procode: {
-                        $in: data.map(item => item._id),
-                    },
-                    state: {
-                        $ne: '4',
-                    },
-                }, {}, (err, data) => {
-                    if (err) {
-                        tdata = resFrame('error', '', err);
-                        res.send(tdata);
-                        return false;
-                    }
-        
-                    taskData = data;
-        
-                    next();
-                });
-            });
-        } else {
-            // 有procode，按项目查
-            Task.getList({
-                procode,
+        var taskData;
+        let userInPM = await ProjectMember.getUserInProMember(ppm_userid),
+            level = await User.getLevel(ppm_userid),
+            search = {
                 state: {
                     $ne: '4',
                 },
-            }, {}, (err, data) => {
-                if (err) {
-                    tdata = resFrame('error', '', err);
-                    res.send(tdata);
-                    return false;
+            };
+
+        if (level === 'A') {
+            let usersPro = await Project.getUsersPro(ppm_userid);
+
+            // 组织内全部的
+            search.procode = usersPro.map(item => item.id);
+        } else if (level === 'M') {
+            // 本人创建的项目的和本人参与的
+
+            let userCreatedPro = await Project.find({
+                adduser: ppm_userid,
+            });
+
+            search['$or'] = [
+                {
+                    procode: userCreatedPro.map(item => item.id),
+                },
+                {
+                    member: userInPM._id,
                 }
-    
-                taskData = data;
-        
-                next();
+            ];
+        } else {
+            // 仅本人参与的
+            search.member = userInPM.id;
+        }
+
+        if (!procode) {
+            // 没有procode，按人查
+            taskData = await Task.getList(search);
+        } else {
+            // 有procode，按项目查
+            taskData = await Task.getList({
+                ...search,
+                procode,
             });
         }
-    }).link(next => {
+        
+        // 分组
         var tasks = taskData,
             statsArr = [{state: '0', task: []}, {state: '1', task: []}, {state: '2', task: []}, {state: '3', task: []}];
 
@@ -136,84 +137,67 @@ router.get('/list-state', function (req, res, next) {
 
         tdata = resFrame(regroup);
         res.send(tdata);
-    }).run();
+    } catch (e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
-router.get('/list-file', function (req, res, next) {
-    const {procode, title, starttime, endtime} = req.query,
-        {ppm_userid} = req.cookies;
+router.get('/list-file', async function (req, res, next) {
+    var tdata;
 
-    var search = {
-        state: '4',
-    };
+    try {
+        const {procode, title, starttime, endtime} = req.query,
+            {ppm_userid} = req.cookies;
 
-    if (title) {
-        search.title = {
-            $regex: new RegExp(title, 'i'),
+        var search = {
+            state: '4',
         };
-    }
 
-    if (starttime && endtime) {
-        search.filetime = {
-            $gte: starttime,
-            $lte: endtime,
-        };
-    }
+        if (title) {
+            search.title = {
+                $regex: new RegExp(title, 'i'),
+            };
+        }
 
-    var taskData;
+        if (starttime && endtime) {
+            search.filetime = {
+                $gte: starttime,
+                $lte: endtime,
+            };
+        }
 
-    new Chain().link(next => {
+        var taskData;
+
         if (!procode) {
             // 没有procode，按人查
-            Project.getUsersPro(ppm_userid, true, (err, data) => {
-                if (err) {
-                    tdata = resFrame('error', '', err);
-                    res.send(tdata);
-                    return false;
-                }
+            var data = await Project.getUsersPro(ppm_userid, true);
 
-                Task.getList({
-                    procode: {
-                        $in: data.map(item => item._id),
-                    },
-                    ...search,
-                }, {
-                    filetime: -1,
-                }, (err, data) => {
-                    if (err) {
-                        tdata = resFrame('error', '', err);
-                        res.send(tdata);
-                        return false;
-                    }
-        
-                    taskData = data;
-        
-                    next();
-                });
+            taskData = await Task.getList({
+                procode: {
+                    $in: data.map(item => item._id),
+                },
+                ...search,
+            }, {
+                filetime: -1,
             });
         } else {
             // 有procode，按项目查
-            Task.getList({
+
+            taskData = await Task.getList({
                 procode,
                 ...search,
             }, {
                 filetime: -1,
-            }, (err, data) => {
-                if (err) {
-                    tdata = resFrame('error', '', err);
-                    res.send(tdata);
-                    return false;
-                }
-    
-                taskData = data;
-        
-                next();
             });
         }
-    }).link(next => {
+
         tdata = resFrame(taskData);
         res.send(tdata);
-    }).run();
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 router.post('/form', function (req, res, next) {
@@ -332,28 +316,21 @@ router.post('/form', function (req, res, next) {
     }
 });
 
-router.get('/detail', function (req, res, next) {
-    const {taskcode} = req.query,
-        {ppm_userid} = req.cookies;
+router.get('/detail', async function (req, res, next) {
+    var tdata;
 
-    var taskData;
+    try {
+        const {taskcode} = req.query,
+            {ppm_userid} = req.cookies;
 
-    new Chain().link(next => {
-        Task.getRow(taskcode, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
+        var taskData = await Task.getRow(taskcode);
 
-            taskData = data;
-    
-            next();
-        });
-    }).link(next => {
         tdata = resFrame(taskData);
         res.send(tdata);
-    }).run();
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 router.post('/del', function (req, res, next) {
@@ -415,58 +392,51 @@ router.post('/updatestete', function (req, res, next) {
     });
 });
 
-router.post('/updatedrag', function (req, res, next) {
-    const groupArr = req.body,
-        {ppm_userid} = req.cookies;
-
+router.post('/updatedrag', async function (req, res, next) {
     var tdata;
 
-    new Chain().link(next => {
-        Task.updateDrag(groupArr, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
+    try {
+        const groupArr = req.body,
+            {ppm_userid} = req.cookies;
 
-            next();
-        });
-    }).link(next => {
-        TaskGroup.updateTaskId(groupArr, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-    
-            tdata = resFrame(data);
-            res.send(tdata);
-        });
-    }).run();
+        var tasksArr = groupArr.reduce((arr, group) => {
+            arr = [
+                ...arr,
+                ...group.task,
+            ];
+
+            return arr;
+        }, []);
+
+        // 更新order-group表
+        await OrderGroup.updateOrder(ppm_userid, 'task', tasksArr);
+        
+        // 更新task-grout中的顺序及分组
+        var data = TaskGroup.updateTaskId(groupArr);
+
+        tdata = resFrame(data);
+        res.send(tdata);
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
-router.get('/member', function (req, res, next) {
-    const {taskcode} = req.query,
-        {ppm_userid} = req.cookies;
+router.get('/member', async function (req, res, next) {
+    var tdata;
 
-    var taskData;
+    try {
+        const {taskcode} = req.query,
+            {ppm_userid} = req.cookies;
 
-    new Chain().link(next => {
-        Task.getRow(taskcode, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            taskData = data;
-    
-            next();
-        });
-    }).link(next => {
+        var taskData = await Task.getRow(taskcode);
+        
         tdata = resFrame(taskData.member);
         res.send(tdata);
-    }).run();
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 // 归档操作
@@ -520,50 +490,30 @@ router.post('/file', function (req, res, next) {
 });
 
 // 获取时间轴数据
-router.get('/timeline', function (req, res, next) {
-    const {procode} = req.query,
-        {ppm_userid} = req.cookies;
-    
-    var taskData,
-        groupData;
+router.get('/timeline', async function (req, res, next) {
+    var tdata;
 
-    new Chain().link(next => {
+    try {
+        const {procode} = req.query,
+            {ppm_userid} = req.cookies;
+        
+        var taskData = await Task.getList({
+                procode,
+                $where: `this.state !== '4' && this.starttime`,
+            }, {}),
+            groupData = await TaskGroup.find({
+                procode
+            });
 
-        Task.getList({
-            procode,
-            $where: `this.state !== '4' && this.starttime`,
-        }, {}, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            taskData = data;
-    
-            next();
-        });
-    }).link(next => {
-        TaskGroup.find({
-            procode
-        }, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
-
-            groupData = data;
-
-            next();
-        });
-    }).link(next => {
         tdata = resFrame({
             data: taskData,
             group: groupData,
         });
         res.send(tdata);
-    }).run();
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 module.exports = router;

@@ -31,7 +31,7 @@ export default {
     actions: {
         login({commit, getters, state, dispatch}, form) {
             Vue.prototype.$post(`/user/login`, form, function (data, res) {
-                store.commit('setUser', data.user);
+                store.commit('setUser', data);
 
                 store.commit('setSystem', {
                     type: state.system,
