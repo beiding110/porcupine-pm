@@ -2,7 +2,13 @@
     <el-card class="paoject-main">
         <my-search v-model="pgData" @search="queryData">
             <template slot="btn">
-                <my-btn type="new" @click="addHandler">新增</my-btn>
+                <my-btn 
+                v-auth="'project-edit'"
+                type="new" 
+                @click="addHandler"
+                >
+                    新增
+                </my-btn>
             </template>
         </my-search>
         

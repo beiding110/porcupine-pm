@@ -12,28 +12,24 @@ router.get('/', function (req, res, next) {
     res.send('respond with a resource');
 });
 
-router.post('/login', function (req, res, next) {
-    const body = req.body,
-        {loginname, pwd} = body;
-
+router.post('/login', async function (req, res, next) {
     var tdata;
 
-    if (!loginname || !pwd) {
-        tdata = resFrame('error', '', '用户名密码不能为空');
+    try {
+        const body = req.body,
+            {loginname, pwd} = body;
 
-        res.send(tdata);
+        if (!loginname || !pwd) {
+            tdata = resFrame('error', '', '用户名密码不能为空');
 
-        return false;
-    }
-
-    User.findOne({
-        loginname,
-    }, (err, data) => {
-        if (err) {
-            tdata = resFrame('error', '', err);
             res.send(tdata);
+
             return false;
         }
+
+        var data = await User.findOne({
+            loginname,
+        });
 
         if (!data) {
             tdata = resFrame('error', '', '该用户不存在');
@@ -49,13 +45,21 @@ router.post('/login', function (req, res, next) {
     
         data.pwd = '';
 
+        // 获取用户权限列表
+        var auth = await User.getAuth(data.id);
+
+        data._doc.auth = auth;
+
         res.cookie('ppm_userid', data.id, {
             maxAge: 1000 * 60 * 60 * 24,
         });
 
         tdata = resFrame(data);
         res.send(tdata)
-    });
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 router.post('/checkexistbyid', function (req, res, next) {

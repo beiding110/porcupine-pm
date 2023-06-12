@@ -18,6 +18,7 @@
         </div>
 
         <group-add
+            v-auth="'task-group-edit'"
             @reload="queryData"
         ></group-add>
     </div>

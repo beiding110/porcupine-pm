@@ -47,7 +47,7 @@
             </div>
 
             <div 
-            v-if="!state"
+            v-if="!state && dropDown.length"
             class="dropdown"
             >
                 <dropdown-menu 
@@ -74,6 +74,7 @@
 
         <div 
         v-if="!state"
+        v-auth="'task-edit'"
         class="foot"
         >
             <task-add
@@ -85,6 +86,8 @@
 </template>
 
 <script>
+import {checkAuthInArr} from '@/js/authority';
+
 import DropdownMenu from '@components-sys/dropdown-menu';
 import Card from './card';
 import TaskItem from './task-item';
@@ -138,13 +141,14 @@ export default {
     },
     data() {
         return {
-            dropDown: [
+            dropDown: checkAuthInArr([
                 {
                     text: '重命名',
                     command: 'edit',
                     handler: () => {
                         this.editHandler();
                     },
+                    auth: 'task-group-edit',
                 },
                 {
                     text: '删除',
@@ -152,8 +156,9 @@ export default {
                     handler: () => {
                         this.delHandler();
                     },
+                    auth: 'task-group-del'
                 },
-            ],
+            ]),
         };
     },
     computed: {
@@ -182,30 +187,33 @@ export default {
     methods: {
         contextMenuHandler(event) {
             var items = [
-                    {
-                        label: '重命名',
-                        onClick: () => {
-                            this.editHandler();
-                        },
+                {
+                    label: '重命名',
+                    onClick: () => {
+                        this.editHandler();
                     },
-                    {
-                        label: '归档已完成的',
-                        onClick: () => {
-                            showConfirm('归档后，该任务在项目中不可操作', '', () => {
-                                this.fileHandler();
-                            });
-                        },
-                        divided: true,
+                    auth: 'task-group-edit',
+                },
+                {
+                    label: '归档已完成的',
+                    onClick: () => {
+                        showConfirm('归档后，该任务在项目中不可操作', '', () => {
+                            this.fileHandler();
+                        });
                     },
-                    {
-                        label: '删除',
-                        onClick: () => {
-                            showConfirm('确认以删除', '', () => {
-                                this.delHandler();
-                            });
-                        }
+                    divided: true,
+                    auth: 'task-file',
+                },
+                {
+                    label: '删除',
+                    onClick: () => {
+                        showConfirm('确认以删除', '', () => {
+                            this.delHandler();
+                        });
                     },
-                ];
+                    auth: 'task-group-del',
+                },
+            ];
 
             if (this.state) {
                 if (this.state !== '3') {
@@ -220,8 +228,15 @@ export default {
                                 this.fileHandler();
                             });
                         },
+                        auth: 'task-file',
                     },
                 ];
+            }
+
+            items = checkAuthInArr(items);
+
+            if (!items.length) {
+                return;
             }
 
             this.$contextmenu({

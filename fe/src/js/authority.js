@@ -1,37 +1,27 @@
-import Vue from 'vue'
-import store from '@store'
+import store from '@store';
 
-function isAdmin() {
-    return store.getters.user.isadmin === '1';
-};
+/**
+ * 检查用户是否有某权限
+ * @param {String} key 权限name
+ * @returns true/false
+ */
+export function hasAuth(key) {
+    const map = store.getters.user.auth;
 
-const $au = {
-    isAdmin,
-    isAdder(row) {
-        return store.getters.user.userid === row.adduserid;
-    }
-};
-Vue.prototype.$au = $au;
+    return map.includes(key);
+}
 
-Vue.directive('admin', {
-    //指令第一次绑定到元素时
-    bind: (el) => {
-        el.style.display = 'none';
-        if(!isAdmin()) {
-            el.parentNode && el.parentNode.removeChild(el)
-        } else {
-            el.style.display = '';
-        };
-    },
-    //被绑定元素插入父节点时
-    inserted: (el) => {
-
-    },
-    update: (el, binding, vnode) => {
-        if(!isAdmin()) {
-            el.parentNode && el.parentNode.removeChild(el);
+/**
+ * 检查数组中的权限
+ * @param {*} arr 待匹配的数组
+ * @returns 处理后的新数组
+ */
+export function checkAuthInArr(arr = []) {
+    return arr.filter(item => {
+        if (item.auth) {
+            return hasAuth(item.auth);
         }
-    }
-});
 
-export default $au
+        return true;
+    });
+}

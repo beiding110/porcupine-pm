@@ -62,6 +62,7 @@
 
 <script>
 import DIALOG_LIST_MIXIN from '@mixins/dialog-list-page';
+import {checkAuthInArr} from '@/js/authority';
 
 import CONFIG_STATE from '../config/state';
 
@@ -96,7 +97,7 @@ export default {
     },
     data() {
         return {
-            dropDown: [
+            dropDown: checkAuthInArr([
                 {
                     text: '编辑',
                     command: 'edit',
@@ -105,6 +106,7 @@ export default {
                         this.dialogComponent = 'form-page';
                         this.editHandler(this.data);
                     },
+                    auth: 'task-edit',
                 },
                 {
                     text: '上报工时',
@@ -132,8 +134,9 @@ export default {
                     handler: () => {
                         this.delHandler();
                     },
+                    auth: 'task-del',
                 },
-            ],
+            ]),
 
             dialogTitle: '',
             dialogComponent: '',
@@ -141,73 +144,78 @@ export default {
     },
     methods: {
         contextMenuHandler(event) {
-            this.$contextmenu({
-                items: [
-                    {
-                        label: '编辑',
-                        onClick: () => {
-                            this.dialogTitle = '编辑任务';
-                            this.dialogComponent = 'form-page';
-                            this.editHandler(this.data);
-                        },
+            var items = checkAuthInArr([
+                {
+                    label: '编辑',
+                    onClick: () => {
+                        this.dialogTitle = '编辑任务';
+                        this.dialogComponent = 'form-page';
+                        this.editHandler(this.data);
                     },
-                    {
-                        label: '上报工时',
-                        onClick: () => {
-                            const procode = this.data.procode._id || this.$route.params.procode;
+                    auth: 'task-edit',
+                },
+                {
+                    label: '上报工时',
+                    onClick: () => {
+                        const procode = this.data.procode._id || this.$route.params.procode;
 
-                            if (!procode) {
-                                showMsg('上报工时缺失procode');
-                                return;
-                            }
-
-                            this.dialogTitle = '上报工时';
-                            this.dialogComponent = 'form-page-task-report';
-                            this.form = {
-                                procode,
-                                taskcode: this.data._id,
-                            };
-                            this.dialogShow();
-                        },
-                    },
-                    {
-                        label: '修改状态',
-                        children: Object.keys(CONFIG_STATE).reduce((arr, key) => {
-                            var item = CONFIG_STATE[key];
-
-                            if (item.show === false) {
-                                return arr;
-                            }
-
-                            arr.push({
-                                label: item.text,
-                                icon: item.icon,
-                                onClick: () => {
-                                    this.shiftState(key);
-                                },
-                            });
-
-                            return arr;
-                        }, []),
-                    },
-                    {
-                        label: '归档',
-                        onClick: () => {
-                            showConfirm('归档后，该任务在项目中不可操作', '', () => {
-                                this.fileHandler();
-                            });
-                        },
-                        divided: true,
-                    },
-                    {
-                        label: '删除',
-                        onClick: () => {
-                            showConfirm('确认以删除', '', () => {
-                                this.delHandler();
-                            });
+                        if (!procode) {
+                            showMsg('上报工时缺失procode');
+                            return;
                         }
+
+                        this.dialogTitle = '上报工时';
+                        this.dialogComponent = 'form-page-task-report';
+                        this.form = {
+                            procode,
+                            taskcode: this.data._id,
+                        };
+                        this.dialogShow();
                     },
-                ],
+                },
+                {
+                    label: '修改状态',
+                    children: Object.keys(CONFIG_STATE).reduce((arr, key) => {
+                        var item = CONFIG_STATE[key];
+
+                        if (item.show === false) {
+                            return arr;
+                        }
+
+                        arr.push({
+                            label: item.text,
+                            icon: item.icon,
+                            onClick: () => {
+                                this.shiftState(key);
+                            },
+                        });
+
+                        return arr;
+                    }, []),
+                },
+                {
+                    label: '归档',
+                    onClick: () => {
+                        showConfirm('归档后，该任务在项目中不可操作', '', () => {
+                            this.fileHandler();
+                        });
+                    },
+                    auth: 'task-file',
+                    divided: true,
+                },
+                {
+                    label: '删除',
+                    onClick: () => {
+                        showConfirm('确认以删除', '', () => {
+                            this.delHandler();
+                        });
+                    },
+                    auth: 'task-del',
+                },
+            ]);
+
+            this.$contextmenu({
+                items,
                 x: event.clientX,
                 y: event.clientY,
             });

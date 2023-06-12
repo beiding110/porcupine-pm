@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import {checkAuthInArr} from '@/js/authority';
 import ShiftPro from './components/shift-pro';
 
 export default {
@@ -36,7 +37,7 @@ export default {
     },
     computed: {
         nav() {
-            return [
+            return checkAuthInArr([
                 {
                     title: '任务组',
                     path: `/teamwork/${this.$route.params.procode}/task`,
@@ -56,8 +57,9 @@ export default {
                 {
                     title: '甘特图',
                     path: `/teamwork/${this.$route.params.procode}/gantt`,
+                    auth: 'gantt-view'
                 },
-            ];
+            ]);
         }
     },
     methods: {

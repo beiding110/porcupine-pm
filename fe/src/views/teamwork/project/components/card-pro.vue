@@ -23,6 +23,7 @@
 
 <script>
 import DropdownMenu from '@components-sys/dropdown-menu';
+import {checkAuthInArr} from '@/js/authority';
 
 export default {
     components: {
@@ -38,13 +39,14 @@ export default {
     },
     data() {
         return {
-            dropDown: [
+            dropDown: checkAuthInArr([
                 {
                     text: '编辑',
                     command: 'edit',
                     handler: () => {
                         this.editHandler();
                     },
+                    auth: 'project-edit',
                 },
                 {
                     text: '工时统计',
@@ -59,8 +61,9 @@ export default {
                     handler: () => {
                         this.delHandler();
                     },
+                    auth: 'project-del',
                 },
-            ]
+            ]),
         };
     },
     computed: {
@@ -78,29 +81,33 @@ export default {
     },
     methods: {
         contextMenuHandler(event) {
+            var items = checkAuthInArr([
+                {
+                    label: '编辑',
+                    onClick: () => {
+                        this.editHandler();
+                    },
+                    auth: 'project-edit',
+                },
+                {
+                    label: '工时统计',
+                    onClick: () => {
+                        this.goto(`/teamwork/${this.data._id}/taskreport`);
+                    },
+                },
+                {
+                    label: '删除',
+                    onClick: () => {
+                        showConfirm('确认以删除', '', () => {
+                            this.delHandler();
+                        });
+                    },
+                    auth: 'project-del',
+                },
+            ]);
+
             this.$contextmenu({
-                items: [
-                    {
-                        label: '编辑',
-                        onClick: () => {
-                            this.editHandler();
-                        },
-                    },
-                    {
-                        label: '工时统计',
-                        onClick: () => {
-                            this.goto(`/teamwork/${this.data._id}/taskreport`);
-                        },
-                    },
-                    {
-                        label: '删除',
-                        onClick: () => {
-                            showConfirm('确认以删除', '', () => {
-                                this.delHandler();
-                            });
-                        }
-                    },
-                ],
+                items,
                 x: event.clientX,
                 y: event.clientY,
             });

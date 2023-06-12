@@ -29,6 +29,7 @@
 
 <script>
 import lessVars from '@/css/var.scss'
+import {checkAuthInArr} from '@/js/authority';
 
 export default {
     components: {
@@ -38,7 +39,7 @@ export default {
         return {
             colors: lessVars,
 
-            nav: [
+            nav: checkAuthInArr([
                 {
                     title: '首页',
                     path: '/teamwork/index',
@@ -68,8 +69,9 @@ export default {
                     title: '设置管理',
                     path: '/teamwork/settings',
                     icon: 'el-icon-setting',
+                    auth: 'settings-view'
                 },
-            ],
+            ]),
         }
     },
     computed: {
