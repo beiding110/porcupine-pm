@@ -323,9 +323,9 @@ router.get('/detail', async function (req, res, next) {
         const {taskcode} = req.query,
             {ppm_userid} = req.cookies;
 
-        var taskData = await Task.getRow(taskcode);
+        var data = await Task.getRow(taskcode);
 
-        tdata = resFrame(taskData);
+        tdata = resFrame(data);
         res.send(tdata);
     } catch(e) {
         tdata = resFrame('error', '', e);
@@ -429,9 +429,22 @@ router.get('/member', async function (req, res, next) {
         const {taskcode} = req.query,
             {ppm_userid} = req.cookies;
 
-        var taskData = await Task.getRow(taskcode);
+        var taskData,
+            member,
+            level = await User.getLevel(ppm_userid);
+
+        if (!['A', 'M'].includes(level)) {
+            // 普通成员，仅显示本人
+
+            let userInPM = await ProjectMember.getUserInProMember(ppm_userid);
+
+            member = [userInPM];
+        } else {
+            taskData = await Task.getRow(taskcode);
+            member = taskData.member;
+        }
         
-        tdata = resFrame(taskData.member);
+        tdata = resFrame(member);
         res.send(tdata);
     } catch(e) {
         tdata = resFrame('error', '', e);
