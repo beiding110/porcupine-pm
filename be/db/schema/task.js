@@ -83,6 +83,24 @@ dataSchema.statics.delRows = function(rows, cb) {
     });
 };
 
+// 更新状态
+dataSchema.statics.updateState = async function(tasks) {
+    var bwArr = tasks.map(task => {
+        return {
+            updateOne: {
+                filter: {
+                    _id: task._id,
+                },
+                update: {
+                    state: task.state,
+                },
+            },
+        }
+    });
+
+    await this.bulkWrite(bwArr);
+};
+
 var Data = mongoose.model('task', dataSchema);
 
 module.exports = Data;

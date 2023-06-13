@@ -10,6 +10,7 @@ const TaskGroup = require('../db/schema/task-group');
 const Task = require('../db/schema/task');
 const OrderGroup = require('../db/schema/order-group');
 const User = require('../db/schema/user.js');
+const TaskStateMember = require('../db/schema/task-state-member.js');
 
 const isLogin = require('../middleware/is-login');
 router.use(isLogin);
@@ -93,9 +94,15 @@ router.get('/list', async function (req, res, next) {
         // 排序
         var listWithOrder = await OrderGroup.bindOrder(ppm_userid, 'task-group', groupWithTaskData);
 
-        listWithOrder.forEach(async group => {
-            group.task = await OrderGroup.bindOrder(ppm_userid, 'task', groupWithTaskData);
-        });
+        for (let i = 0; i < listWithOrder.length; i ++) {
+            let group = listWithOrder[i];
+
+            // 给task绑定排序
+            await OrderGroup.bindOrder(ppm_userid, 'task', group.task);
+
+            // 给task绑定状态
+            await TaskStateMember.bindStateFromTSM(ppm_userid, group.task);
+        }
 
         tdata = resFrame(listWithOrder);
         res.send(tdata);

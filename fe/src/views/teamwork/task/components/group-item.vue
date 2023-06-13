@@ -60,6 +60,7 @@
             <draggable 
             v-model="data.task" 
             group="tasks"
+            :move="dragMoveHandler"
             @change="dragEndHandler"
             >
                 <task-item
@@ -276,6 +277,17 @@ export default {
 
                 this.$emit('reload');
             });
+        },
+        dragMoveHandler(e) {
+            var {statelimit} = e.draggedContext.element,
+                targetState = e.relatedContext.component.$parent.state;
+
+            if (statelimit) {
+                // 只能拖动到任务状态限制之后的状态
+                return Number(targetState) >= Number(statelimit);
+            }
+            
+            return true;
         },
         dragEndHandler() {
             this.$emit('taskdrag');

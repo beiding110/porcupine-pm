@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+const {Types} = require('mongoose');
+
 const resFrame = require('../utils/resFrame');
 const app = require('../utils/app');
 const Chain = require('../utils/Chain');
@@ -11,6 +13,7 @@ const Project = require('../db/schema/project');
 const OrderGroup = require('../db/schema/order-group');
 const ProjectMember = require('../db/schema/project-member');
 const User = require('../db/schema/user.js');
+const TaskStateMember = require('../db/schema/task-state-member.js');
 
 const isLogin = require('../middleware/is-login');
 router.use(isLogin);
@@ -103,6 +106,9 @@ router.get('/list-state', async function (req, res, next) {
                 procode,
             });
         }
+
+        // 处理成员的state
+        await TaskStateMember.bindStateFromTSM(ppm_userid, taskData);
         
         // 分组
         var tasks = taskData,
@@ -364,32 +370,65 @@ router.post('/del', function (req, res, next) {
     });
 });
 
-router.post('/updatestete', function (req, res, next) {
-    const {_id, state} = req.body,
-        {ppm_userid} = req.cookies;
-
+router.post('/updatestete', async function (req, res, next) {
     var tdata;
 
-    if (!_id) {
-        tdata = resFrame('error', '', '请选择要更新的项');
+    try {
+        const {_id, state} = req.body,
+            {ppm_userid} = req.cookies;
 
-        res.send(tdata);
+        if (!_id) {
+            tdata = resFrame('error', '', '请选择要更新的项');
 
-        return false;
-    }
-
-    Task.findByIdAndUpdate(_id, {
-        state
-    }, (err, data) => {
-        if (err) {
-            tdata = resFrame('error', '', err);
             res.send(tdata);
+
             return false;
+        }
+
+        const level = await User.getLevel(ppm_userid); // 当前用户的权限等级
+
+        var data;
+
+        if (['A', 'M'].includes(level)) {
+            // 直接改变task的属性
+
+            // 更新TaskStateMember
+            TaskStateMember.updateMany({
+                taskid: Types.ObjectId(_id),
+                $where: `Number(${state}) > Number(this['state'])`,
+            }, {
+                state,
+            });
+
+            // 更新task本身状态
+            data = await Task.findByIdAndUpdate(_id, {
+                state
+            });
+        } else {
+            // 单独给当前用户记录属性
+
+            let userInPM = await ProjectMember.getUserInProMember(ppm_userid);
+
+            await TaskStateMember.deleteOne({
+                memberid: userInPM,
+                taskid: _id,
+            });
+
+            data = await TaskStateMember.insertMany([
+                {
+                    memberid: userInPM,
+                    taskid: _id,
+                    state,
+                }
+            ]);
         }
 
         tdata = resFrame(data);
         res.send(tdata);
-    });
+    } catch(e) {
+        tdata = resFrame('error', '', e);
+        res.send(tdata);
+    }
 });
 
 router.post('/updatedrag', async function (req, res, next) {
@@ -399,20 +438,65 @@ router.post('/updatedrag', async function (req, res, next) {
         const groupArr = req.body,
             {ppm_userid} = req.cookies;
 
-        var tasksArr = groupArr.reduce((arr, group) => {
-            arr = [
-                ...arr,
-                ...group.task,
-            ];
+        var level = await User.getLevel(ppm_userid),
+            data,
+            tasksArr = groupArr.reduce((arr, group) => {
+                arr = [
+                    ...arr,
+                    ...group.task,
+                ];
 
-            return arr;
-        }, []);
+                return arr;
+            }, []);
 
-        // 更新order-group表
-        await OrderGroup.updateOrder(ppm_userid, 'task', tasksArr);
-        
-        // 更新task-grout中的顺序及分组
-        var data = TaskGroup.updateTaskId(groupArr);
+        if (['A', 'M'].includes(level)) {
+            // 直接改变task的属性
+    
+            // 更新order-group表
+            await OrderGroup.updateOrder(ppm_userid, 'task', tasksArr);
+
+            // 更新TaskStateMember
+            var tsmBwArr = tasksArr.map(item => {
+                return {
+                    updateMany: {
+                        filter: {
+                            taskid: Types.ObjectId(item._id),
+                            $where: `Number(${item.state}) > Number(this['state'])`,
+                        },
+                        update: {
+                            state: item.state,
+                        },
+                    }
+                }
+            });
+
+            await TaskStateMember.bulkWrite(tsmBwArr);
+
+            // 更新task状态
+            await Task.updateState(tasksArr);
+            
+            // 更新task-grout中的顺序及分组
+            data = TaskGroup.updateTaskId(groupArr);
+        } else {
+            // 单独给当前用户记录属性
+
+            let userInPM = await ProjectMember.getUserInProMember(ppm_userid);
+
+            await TaskStateMember.deleteMany({
+                memberid: userInPM,
+                taskid: tasksArr.map(item => item._id),
+            });
+
+            let insertArr = tasksArr.map(item => {
+                return {
+                    memberid: userInPM,
+                    taskid: item._id,
+                    state: item.state,
+                }
+            });
+
+            data = await TaskStateMember.insertMany(insertArr);
+        }
 
         tdata = resFrame(data);
         res.send(tdata);

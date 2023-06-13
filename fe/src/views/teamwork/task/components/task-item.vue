@@ -230,6 +230,17 @@ export default {
             });
         },
         shiftState(state) {
+            var {statelimit} = this.data;
+
+            if (
+                statelimit 
+                && !(Number(state) >= Number(statelimit))
+            ) {
+                showMsg('该任务被限制更新至状态');
+
+                return;
+            }
+
             this.data.state = state;
 
             this.$post('/task/updatestete', this.data, () => {

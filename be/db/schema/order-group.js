@@ -49,20 +49,26 @@ dataSchema.statics.bindOrder = async function (userid, type, targetArr) {
     });
 
     // 按排序重新排列
-    targetArr.forEach((row) => {
-        var target = orderList.find(item => {
+    for (let i = 0; i < targetArr.length; i ++) {
+        let row = targetArr[i];
+
+        var target = await orderList.find(item => {
             return item.linkid === row.id;
         });
 
         if (!target) {
-            return;
+            continue;
         }
 
         row.order = target.order;
         row.groupcode = target.groupcode;
-    });
+    }
+
     targetArr.sort((a, b) => {
-        return a.order - b.order;
+        let o1 = a.order || 0,
+            o2 = b.order || 0;
+
+        return o1 - o2;
     });
 
     return targetArr;

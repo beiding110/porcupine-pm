@@ -17,27 +17,15 @@ let data = {
 var dataSchema = Schema(data);
 
 dataSchema.statics.getGroupId = async function (id) {
-    return new Promise((res, rej) => {
-        this.findById(id, (err, data) => {
-            if (err) {
-                rej(err);
-            }
-    
-            res(data.groupid);
-        });
-    });
+    var res = await this.findById(id);
+
+    return res.groupid;
 }
 
 dataSchema.statics.getLevel = async function (id) {
-    return new Promise((res, rej) => {
-        this.findById(id, (err, data) => {
-            if (err) {
-                rej(err);
-            }
-    
-            res(data.level);
-        });
-    });
+    var res = await this.findById(id);
+
+    return res.level;
 }
 
 /**
