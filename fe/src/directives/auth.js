@@ -1,4 +1,4 @@
-import {hasAuth} from '@/js/authority';
+import {hasAuth} from '@js/authority';
 
 function removeEl(el) {
     try {

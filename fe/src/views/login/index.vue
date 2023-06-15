@@ -46,10 +46,6 @@
 </template>
 
 <script>
-import logo from '@assets/logo.png';
-
-import * as Cookies from "js-cookie";
-
 export default {
     data: () => ({
         form: {
@@ -57,7 +53,7 @@ export default {
             pwd: '',
         },
 
-        logoSrc: logo,
+        logoSrc: './config/logo.png',
     }),
     methods: {
         /*登录函数*/
@@ -65,18 +61,9 @@ export default {
             this.$store.dispatch('login', this.form);
         }
     },
-    beforeRouteEnter (to, from, next) {
-        var session = Cookies.get('ppm_userid');
-
-        if (session) {
-            next('/teamwork/index');
-        }
-
-        next();
-    },
     mounted() {
 
-    },
+    }
 }
 </script>
 

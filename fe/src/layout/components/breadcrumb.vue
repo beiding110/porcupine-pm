@@ -2,7 +2,7 @@
      <el-breadcrumb 
      class="top-nav-breadcrumb"
      >
-        <template v-for="item in $store.getters.bread">
+        <template v-for="item in bread">
             <el-breadcrumb-item 
             :key="item.path"
             :to="item.path"
@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import {mapState} from 'vuex';
+
 export default {
     props: {
         
@@ -23,17 +25,21 @@ export default {
 
         }
     },
+    computed: {
+        ...mapState({
+            bread: state => state.bread.bread,
+        }),
+    },
     methods: {
 
     },
-    mounted: function() {
+    mounted() {
 
-    }
+    },
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.top-nav-breadcrumb{
-}
+.top-nav-breadcrumb{display:inline-block; line-height:50px; margin-left:20px;}
 </style>

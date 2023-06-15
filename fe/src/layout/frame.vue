@@ -11,10 +11,10 @@
                 <el-menu-item
                 v-for="(item, index) in nav" 
                 :key="index"
-                :index="item.path"
+                :index="item.url"
                 >
-                    <i :class="item.icon"></i>
-                    <span slot="title">{{item.title}}</span>
+                    <i :class="item.imgpath"></i>
+                    <span slot="title">{{item.text}}</span>
                 </el-menu-item>
             </el-menu>
         </div>
@@ -28,8 +28,10 @@
 </template>
 
 <script>
-import lessVars from '@/css/var.scss'
-import {checkAuthInArr} from '@/js/authority';
+import {checkAuthInArr} from '@js/authority';
+import nav from '@config/nav.js';
+
+import lessVars from '@css/var.scss';
 
 export default {
     components: {
@@ -38,44 +40,8 @@ export default {
     data () {
         return {
             colors: lessVars,
-
-            nav: checkAuthInArr([
-                {
-                    title: '首页',
-                    path: '/teamwork/index',
-                    icon: 'el-icon-s-home',
-                },
-                {
-                    title: '项目',
-                    path: '/teamwork/project',
-                    icon: 'el-icon-s-management',
-                },
-                {
-                    title: '活跃任务',
-                    path: '/teamwork/task',
-                    icon: 'el-icon-document',
-                },
-                {
-                    title: '日报',
-                    path: '/teamwork/taskreport/monthly',
-                    icon: 'el-icon-date',
-                },
-                {
-                    title: '归档数据',
-                    path: '/teamwork/file',
-                    icon: 'el-icon-document-checked',
-                },
-                {
-                    title: '设置管理',
-                    path: '/teamwork/settings',
-                    icon: 'el-icon-setting',
-                    auth: 'settings-view'
-                },
-            ]),
-        }
-    },
-    computed: {
-        
+            nav: checkAuthInArr(nav),
+        };
     },
     methods: {
         

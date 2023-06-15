@@ -1,4 +1,4 @@
-exports.vue = {
+module.exports = {
     devServer: {
         port: '8080',
         open: true,
@@ -11,28 +11,22 @@ exports.vue = {
                 }
             }
         },
-    }
-}
-
-exports.project = {
-    'project-type': 'pc',
-
+    },
     assetsDir: 'static',
+
+    // 项目功能配置
+    'project-type': 'pc',
     
     ui: {
         element: true,
         mint: false
     },
 
-    router: {
-        'base-name': '',
-        title: '项目管理'
-    },
-
     //ajax类型axios或jquery，用法相同
-    ajax: 'jquery',
+    ajax: 'axios',
 
-    sentry: false,
-
-    cnzz: false,
+    sentry: {
+        dsn: '',
+        enabled: false
+    },
 }
