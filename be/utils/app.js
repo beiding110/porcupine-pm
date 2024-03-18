@@ -67,5 +67,6 @@ module.exports = {
     getTime() {
         return timePattern(new Date(), 'yyyy-MM-dd HH:mm:ss');
     },
+    timePattern,
     calcIntersection,
 }

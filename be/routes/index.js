@@ -6,6 +6,7 @@ module.exports = function (app) {
     app.use('/task', require('./task'));
     app.use('/taskreport', require('./task-report'));
     app.use('/gantt', require('./gantt'));
+    app.use('/file', require('./file'));
 
     return app;
 };

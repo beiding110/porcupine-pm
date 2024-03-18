@@ -2,6 +2,7 @@
 node_modules
 /dist
 /config/index.js
+/upload
 
 # local env files
 .env.local
