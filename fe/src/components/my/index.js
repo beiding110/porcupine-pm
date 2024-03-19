@@ -18,6 +18,7 @@ export default {
         Vue.component('my-upload', function(){return import(/*webpackChunkName: 'coms'*/ './upload');});
         Vue.component('my-number-range', function(){return import(/*webpackChunkName: 'coms'*/ './number-range');});
         Vue.component('my-upload-s', function(){return import(/*webpackChunkName: 'coms'*/ './upload-s/index');});
+        Vue.component('my-upload-e', function(){return import(/*webpackChunkName: 'coms'*/ './upload-e');});
 
         // 其他
         Vue.component('my-nav-menu', function(){return import(/*webpackChunkName: 'coms'*/ './nav-menu');});
