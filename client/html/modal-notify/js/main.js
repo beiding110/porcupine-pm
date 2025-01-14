@@ -62,9 +62,11 @@ class RendDom {
 
             // 创建链接
             root.addEventListener('click', () => {
-                window.open(this.$setting.url);
-
-                // window.HTMLSelectElement.openExternal(this.$setting.url);
+                if (shell) {
+                    shell.openExternal(this.$setting.url);
+                } else {
+                    window.open(this.$setting.url);
+                }
             });
         }
 
