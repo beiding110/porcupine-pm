@@ -18,6 +18,7 @@ var router = new Router({
 
         {
             path: `/`,
+            redirect: '/login',
             component: () => import(/*webpackChunkName: 'pc'*/ '@layout/empty'),
             meta: {
                 title:store.state.config.title,
