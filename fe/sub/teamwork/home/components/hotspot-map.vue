@@ -10,6 +10,7 @@
                         format="yyyy-MM-dd"
                         value-format="yyyy-MM-dd"
                         :picker-options="pickerOptions"
+                        unlink-panels
                         @change="queryData"
                     ></el-date-picker>
                 </el-form-item>

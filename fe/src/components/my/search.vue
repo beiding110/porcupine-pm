@@ -17,6 +17,7 @@
                         :start-placeholder="timeStartPlaceholder"
                         :end-placeholder="timeEndPlaceholder"
                         popper-class="bd__datepiaker"
+                        unlink-panels
                     ></el-date-picker>
                 </el-form-item>
             </slot>
