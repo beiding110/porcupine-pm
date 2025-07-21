@@ -273,10 +273,12 @@ export default {
 <style lang="scss" scoped>
     @import '@css/var.scss';
 
+    $borderStyle: 1px solid #DCDFE6;
+
     .hotspot-map{
         position: relative;
         display: flex;
-        border: 1px solid #DCDFE6;
+        border: $borderStyle;
         min-height: 120px;
 
         .empty{
@@ -325,7 +327,8 @@ export default {
 
                 height: $cellSize;
                 min-width: $cellSize;
-                border: 1px solid #DCDFE6;
+                border-right: $borderStyle;
+                border-bottom: $borderStyle;
                 text-align: center;
                 cursor: default;
                 background: white;
