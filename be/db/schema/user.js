@@ -36,11 +36,9 @@ dataSchema.statics.getLevel = async function (id) {
 dataSchema.statics.getAuth = async function (id) {
     const level = await this.getLevel(id);
 
-    var auth = await Authority.find({
-        roles: level,
-    });
+    var auths = await Authority.findAuthsByLevel(level);
 
-    return auth.map(item => item.name);
+    return auths;
 }
 
 /**

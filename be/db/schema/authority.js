@@ -19,6 +19,15 @@ let data = {
 };
 
 var dataSchema = Schema(data);
+
+dataSchema.statics.findAuthsByLevel = async function (level) {
+    var auths = await this.find({
+        roles: level,
+    });
+
+    return auths.map(item => item.name);
+};
+
 var Data = mongoose.model('authority', dataSchema);
 
 /**
