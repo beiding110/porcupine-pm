@@ -110,9 +110,9 @@ export default {
     watch: {
         tableData: {
             handler(val) {
-                this.g0 = val.filter(item => !item.groupcode || item.groupcode === '0');
-                this.g1 = val.filter(item => item.groupcode === '1');
-                this.g2 = val.filter(item => item.groupcode === '2');
+                this.g0 = val.filter(item => !item.groupcode || item.groupcode === 'g0');
+                this.g1 = val.filter(item => item.groupcode === 'g1');
+                this.g2 = val.filter(item => item.groupcode === 'g2');
             }, 
             deep: true,
         },
