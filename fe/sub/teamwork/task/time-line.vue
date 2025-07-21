@@ -36,9 +36,9 @@ export default {
                         group: item.groupcode,
                         content: item.title,
                         start: item.starttime,
-                        end: item.endtime,
+                        end: `${item.endtime} 23:59:59`,
                         state: item.state,
-                    }
+                    };
                 });
 
                 groupsData = groupsData.map(item => {
