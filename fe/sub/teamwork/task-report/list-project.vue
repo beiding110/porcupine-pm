@@ -59,7 +59,7 @@
 
                         <el-table-column label="操作" width="80px">
                             <template slot-scope="scope">
-                                <el-button type="text" icon="el-icon-edit" @click="editHandler(scope.row)">编辑</el-button>
+                                <el-button type="text" icon="el-icon-edit" @click="editHandler({ ...scope.row, taskcode: scope.row.taskcode._id })">编辑</el-button>
                             </template>
                         </el-table-column>
                     </my-table>
