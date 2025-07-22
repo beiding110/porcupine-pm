@@ -14,7 +14,7 @@ a {cursor:pointer; text-decoration:none;}
 /* 滚动条的滑轨背景颜色 */::-webkit-scrollbar-thumb {background-color:#737375;border-radius:4px;}
 /* 滑块颜色 */::-webkit-scrollbar-button {display:none;}
 /* 滑轨两头的监听按钮颜色 */::-webkit-scrollbar-corner {opacity:0;}
-/* 横向滚动条和纵向滚动条相交处尖角的颜色 *//*vis样式类*/.vis-item.success {background:#67C23A;border-color:#67C23A;}
+/* 横向滚动条和纵向滚动条相交处尖角的颜色 */
 
 // 去除ie浏览器下input中自动添加的叉号
 input::-ms-clear{
