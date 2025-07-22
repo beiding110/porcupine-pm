@@ -9,7 +9,10 @@
 </template>
 
 <script>
-const vis = require('vis-timeline/standalone');
+import moment from 'moment';
+import { DataSet } from 'vis-data/peer';
+import { Timeline } from 'vis-timeline/peer';
+import 'vis-timeline/styles/vis-timeline-graph2d.css';
 
 export default {
     props: {
@@ -54,15 +57,16 @@ export default {
             }
 
             // Create a DataSet (allows two way data-binding)
-            var items = new vis.DataSet(this.data),
+            var items = new DataSet(this.data),
                 groups;
 
             if (this.groups) {
-                groups = new vis.DataSet(this.groups);
+                groups = new DataSet(this.groups);
             }
 
             // Configuration for the Timeline
             const options = {
+                locale: moment.locale('zh-cn'),
                 zoomMin: 1000 * 60 * 60 * 24 * 7 * 2,
                 // zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
                 onInitialDrawComplete: () => {
@@ -91,7 +95,7 @@ export default {
             };
 
             // Create a Timeline
-            this.timeline = new vis.Timeline(this.$refs._visualization, items, groups, options);
+            this.timeline = new Timeline(this.$refs._visualization, items, groups, options);
         },
         updateData() {},
     },
