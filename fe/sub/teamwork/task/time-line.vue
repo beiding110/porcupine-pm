@@ -12,6 +12,8 @@
 <script>
 import TimeLine from '@components/time-line';
 
+import CONFIG from './config/state';
+
 export default {
     components: {
         TimeLine,
@@ -38,6 +40,7 @@ export default {
                         start: item.starttime,
                         end: `${item.endtime} 23:59:59`,
                         state: item.state,
+                        className: CONFIG[item.state].type,
                     };
                 });
 
