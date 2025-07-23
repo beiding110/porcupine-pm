@@ -33,6 +33,12 @@ export default {
                     groupsData = data.group;
 
                 tableData = tableData.map(item => {
+                    let memberHTML = '';
+
+                    item.member.forEach(row => {
+                        memberHTML += `<div class="item">${ row.name.slice(0, 1) }</div>`;
+                    });
+
                     return {
                         id: item._id,
                         group: item.groupcode,
@@ -41,6 +47,13 @@ export default {
                         end: `${item.endtime} 23:59:59`,
                         state: item.state,
                         className: CONFIG[item.state].type,
+                        visibleFrameTemplate: `
+                            <div class="sub">
+                                <div class="members">
+                                    ${memberHTML}
+                                </div>
+                            </div>
+                        `,
                     };
                 });
 
@@ -62,3 +75,26 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+.sub {
+    .members {
+        display: flex;
+        padding: 2px 5px;
+        overflow: hidden;
+
+        .item {
+            font-size: 12px;
+            background: #C0C4CC;
+            line-height: 1em;
+            padding: 2px;
+            border-radius: 8px;
+            color: white;
+
+            & + .item {
+                margin-left: 2px;
+            }
+        }
+    }
+}
+</style>
