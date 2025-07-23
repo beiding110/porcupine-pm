@@ -24,6 +24,10 @@ export default {
             type: Array,
             default: () => [],
         },
+        options: {
+            type: Object,
+            default: () => ({}),
+        },
     },
     data() {
         return {
@@ -67,8 +71,11 @@ export default {
             // Configuration for the Timeline
             const options = {
                 locale: moment.locale('zh-cn'),
-                zoomMin: 1000 * 60 * 60 * 24 * 7 * 2,
-                // zoomMax: 1000 * 60 * 60 * 24 * 31 * 3,
+                xss: {
+                    disabled: true,
+                },
+                zoomMin: 1000 * 60 * 60 * 24 * 7,
+                zoomMax: 1000 * 60 * 60 * 24 * 365 * 5,
                 onInitialDrawComplete: () => {
                     this.loadingController = false;
                 },
@@ -92,6 +99,7 @@ export default {
 
                     return '';
                 },
+                ...this.options,
             };
 
             // Create a Timeline
