@@ -76,6 +76,7 @@ router.get('/list', async function (req, res, next) {
         var taskRepWithMemberData = await TaskReport.find(search, null, {
             sort: {
                 reporttime: -1,
+                addtime: -1,
             },
         }).populate([
             {
