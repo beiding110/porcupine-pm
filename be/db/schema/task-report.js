@@ -159,6 +159,115 @@ dataSchema.statics.buildByProject = function(arr, cb) {
     cb && cb(arrRebuild);
 };
 
+dataSchema.statics.buildByTask = function(arr, cb) {
+    var arrRebuild = [];
+
+    arrRebuild = arr.reduce((taskArr, item) => {
+        var task = item.taskcode,
+            member = item.member,
+            indexInArr;
+
+        if (!taskArr.some((taskItem, existIndex) => {
+            if (taskItem.id === task.id) {
+                indexInArr = existIndex;
+
+                return true;
+            }
+
+            return false;
+        })) {
+            // 数组中不存在项目
+
+            taskArr.push({
+                proname: task.title,
+                id: task.id,
+                tasktime: item.tasktime,
+                member: [
+                    {
+                        name: member.name,
+                        id: member.id,
+                        tasktime: item.tasktime,
+    
+                        report: [
+                            {
+                                reporttime: item.reporttime,
+                                tasktime: item.tasktime,
+                                reporttimes: 1,
+                            },
+                        ],
+                    },
+                ],
+            });
+        } else {
+            // 数组中存在项目
+
+            var existTaskinfo = taskArr[indexInArr],
+                existMemberIndex;
+
+            existTaskinfo.tasktime += item.tasktime;
+
+            if (!existTaskinfo.member.some((member, memberIndex) => {
+                if (member.id === item.member.id) {
+                    existMemberIndex = memberIndex;
+                    return true;
+                }
+
+                return false;
+            })) {
+                // 列表里没这个人
+
+                existTaskinfo.member.push({
+                    name: member.name,
+                    id: member.id,
+                    tasktime: item.tasktime,
+
+                    report: [
+                        {
+                            reporttime: item.reporttime,
+                            tasktime: item.tasktime,
+                            reporttimes: 1,
+                        },
+                    ],
+                });
+            } else {
+                // 列表里有这个人
+
+                existTaskinfo.member[existMemberIndex].tasktime += item.tasktime;
+
+                var existDateIndex,
+                    report = existTaskinfo.member[existMemberIndex].report;
+
+                if (!report.some((reportItem, reportIndex) => {
+                    if (reportItem.reporttime === item.reporttime) {
+                        existDateIndex = reportIndex;
+
+                        return true;
+                    }
+
+                    return false;
+                })) {
+                    // 数组里不存在这天的记录
+
+                    report.push({
+                        reporttime: item.reporttime,
+                        tasktime: item.tasktime,
+                        reporttimes: 1,
+                    });
+                } else {
+                    // 数组里存在这天的记录
+
+                    report[existDateIndex].tasktime += item.tasktime;
+                    report[existDateIndex].reporttimes ++;
+                }
+            }
+        }
+
+        return taskArr;
+    }, []);
+
+    cb && cb(arrRebuild);
+};
+
 var Data = mongoose.model('task-report', dataSchema);
 
 module.exports = Data;

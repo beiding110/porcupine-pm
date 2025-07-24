@@ -3,10 +3,15 @@
         <el-row :gutter="10" class="row">
             <el-col :span="24">
                 <el-card>
-                    <hotspot-map
-                        :data="hmData"
-                        :range="hmRange"
-                    ></hotspot-map>
+                    <hotspot-map :data="hmProjectData" :range="hmProjectRange"></hotspot-map>
+                </el-card>
+            </el-col>
+        </el-row>
+
+        <el-row :gutter="10" class="row">
+            <el-col :span="24">
+                <el-card>
+                    <hotspot-map :data="hmTaskData" :range="hmTaskRange"></hotspot-map>
                 </el-card>
             </el-col>
         </el-row>
@@ -14,17 +19,17 @@
         <el-row :gutter="10" class="row">
             <el-col :span="12">
                 <el-card>
-                    <my-search 
-                    v-model="pgData" 
-                    @search="queryData"
-                    time-start-placeholder="工作日早至"
-                    time-end-placeholder="工作日晚至"
+                    <my-search
+                        v-model="pgData"
+                        @search="queryData"
+                        time-start-placeholder="工作日早至"
+                        time-end-placeholder="工作日晚至"
                     >
                         <el-form-item>
-                            <my-select 
+                            <my-select
                                 placeholder="成员"
-                                v-model="pgData.member" 
-                                :props="{label:'name', value:'_id'}"
+                                v-model="pgData.member"
+                                :props="{ label: 'name', value: '_id' }"
                                 :url="`/projectmember/list?procode=${$route.params.procode}`"
                             ></my-select>
                         </el-form-item>
@@ -32,19 +37,16 @@
                         <span slot="title"></span>
                     </my-search>
 
-                    <my-table
-                    :data="tableData"
-                    height="608px"
-                    >
+                    <my-table :data="tableData" height="608px">
                         <el-table-column label="成员" width="80px">
                             <template slot-scope="scope">
-                                {{scope.row.member.name}}
+                                {{ scope.row.member.name }}
                             </template>
                         </el-table-column>
 
                         <el-table-column label="任务">
                             <template slot-scope="scope">
-                                {{scope.row.taskcode.title}}
+                                {{ scope.row.taskcode.title }}
                             </template>
                         </el-table-column>
 
@@ -53,27 +55,25 @@
 
                         <el-table-column label="内容">
                             <template slot-scope="scope">
-                                {{scope.row.detail || '-'}}
+                                {{ scope.row.detail || '-' }}
                             </template>
                         </el-table-column>
 
                         <el-table-column label="操作" width="80px">
                             <template slot-scope="scope">
-                                <el-button type="text" icon="el-icon-edit" @click="editHandler({ ...scope.row, taskcode: scope.row.taskcode._id })">编辑</el-button>
+                                <el-button
+                                    type="text"
+                                    icon="el-icon-edit"
+                                    @click="editHandler({ ...scope.row, taskcode: scope.row.taskcode._id })"
+                                >
+                                    编辑
+                                </el-button>
                             </template>
                         </el-table-column>
                     </my-table>
 
-                    <my-dialog
-                    v-model="dialogVisible"
-                    title="调整工作量"
-                    width="700px"
-                    >
-                        <form-page 
-                            v-if="dialogVisible"
-                            :data="form"
-                            @cancel="dialogClose"
-                        ></form-page>
+                    <my-dialog v-model="dialogVisible" title="调整工作量" width="700px">
+                        <form-page v-if="dialogVisible" :data="form" @cancel="dialogClose"></form-page>
                     </my-dialog>
                 </el-card>
             </el-col>
@@ -81,7 +81,13 @@
                 <el-card>
                     <tui-calendar
                         :schedule="tableData"
-                        :props="{id: '_id', title: (item) => `${item.member.name}:${item.taskcode.title}`, start: 'reporttime', end: 'reporttime', bgColor: item => `#${item.member._id.slice(-7, -1)}`}"
+                        :props="{
+                            id: '_id',
+                            title: (item) => `${item.member.name}:${item.taskcode.title}`,
+                            start: 'reporttime',
+                            end: 'reporttime',
+                            bgColor: (item) => `#${item.member._id.slice(-7, -1)}`,
+                        }"
                     ></tui-calendar>
                 </el-card>
             </el-col>
@@ -125,10 +131,10 @@ export default {
         Echarts,
     },
     data() {
-        var today = new Date().getTime();
+        const today = new Date().getTime();
 
         var endtime = new Date(today),
-            starttime = new Date(today - (30 * 24 * 60 * 60 * 1000));
+            starttime = new Date(today - 30 * 24 * 60 * 60 * 1000);
 
         starttime = starttime.pattern('yyyy-MM-dd');
         endtime = endtime.pattern('yyyy-MM-dd');
@@ -143,46 +149,71 @@ export default {
             ecData_byTime: {},
             ecData_byMember: {},
 
-            hmData: [],
-            hmRange: [],
-        }
+            hmProjectData: [],
+            hmProjectRange: [],
+
+            hmTaskData: [],
+            hmTaskRange: [],
+        };
     },
     methods: {
         queryData() {
-            this.$get('/taskreport/list', {
-                ...this.pgData,
-                procode: this.$route.params.procode,
-            }, data => {
-                this.tableData = data;
+            this.$get(
+                '/taskreport/list',
+                {
+                    ...this.pgData,
+                    procode: this.$route.params.procode,
+                },
+                (data) => {
+                    this.tableData = data;
 
-                this.ecData_byTime = chartByTime(data);
-                this.ecData_byMember = chartByMember(data);
-            });
+                    this.ecData_byTime = chartByTime(data);
+                    this.ecData_byMember = chartByMember(data);
+                }
+            );
         },
         reloadHandler() {
             this.queryData();
         },
-        queryHmData() {
-            this.$get('/taskreport/hotmapbyproject', {
-                procode: this.$route.params.procode,
-            }, data => {
-                this.hmData = data.data;
-                this.hmRange = data.range;
-            });
+        queryHmProjectData() {
+            this.$get(
+                '/taskreport/hotmapbyproject',
+                {
+                    procode: this.$route.params.procode,
+                },
+                (data) => {
+                    this.hmProjectData = data.data;
+                    this.hmProjectRange = data.range;
+                }
+            );
+        },
+        queryHmTaskData() {
+            this.$get(
+                '/taskreport/hotmapbytask',
+                {
+                    procode: this.$route.params.procode,
+                },
+                (data) => {
+                    this.hmTaskData = data.data;
+                    this.hmTaskRange = data.range;
+                }
+            );
         },
     },
     created() {
         this.queryData();
 
-        this.queryHmData();
+        this.queryHmProjectData();
+
+        this.queryHmTaskData();
     },
 };
 </script>
 
 <style lang="scss" scoped>
-    .row{
-        & + .row{
-            margin-top: 10px;
-        }
+.row {
+    & + .row {
+        margin-top: 10px;
     }
+}
 </style>

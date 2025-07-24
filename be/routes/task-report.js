@@ -345,6 +345,66 @@ router.get('/hotmapbyproject', function (req, res, next) {
     }).run();
 });
 
+router.get('/hotmapbytask', function (req, res, next) {
+    const {procode} = req.query,
+        {ppm_userid} = req.cookies;
+
+    var reportData;
+
+    new Chain().link(next => {            
+        TaskReport.find({
+            procode: procode,
+        }, null, {
+            sort: {
+                reporttime: 1,
+            },
+        }, (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+
+            next();
+        });
+    }).link(next => {
+        TaskReport.populate(reportData, [
+            {
+                path: 'member',
+            },
+            {
+                path: 'taskcode',
+            },
+        ], (err, data) => {
+            if (err) {
+                tdata = resFrame('error', '', err);
+                res.send(tdata);
+                return false;
+            }
+
+            reportData = data;
+
+            next();
+        });
+    }).link(next => {
+        var rebuild,
+            rangeStart = (reportData[0] || {}).reporttime,
+            rangeEnd = (reportData[reportData.length - 1] || {}).reporttime;
+        
+        TaskReport.buildByTask(reportData, data => {
+            rebuild = data;
+
+            tdata = resFrame({
+                data: rebuild,
+                range: [rangeStart, rangeEnd],
+            });
+            res.send(tdata);
+        });
+    }).run();
+});
+
 /**
  * 人员-项目占用情况
  */
