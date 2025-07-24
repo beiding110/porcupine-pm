@@ -71,6 +71,9 @@ export default {
             // Configuration for the Timeline
             const options = {
                 locale: moment.locale('zh-cn'),
+                margin: {
+                    item: 6,
+                },
                 xss: {
                     disabled: true,
                 },
