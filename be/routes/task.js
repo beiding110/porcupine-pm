@@ -111,7 +111,7 @@ router.get('/list-state', async function (req, res, next) {
         await TaskStateMember.bindStateFromTSM(ppm_userid, taskData);
         
         // 分组
-        var tasks = taskData,
+        var tasks = await OrderGroup.bindOrder(ppm_userid, 'task', taskData),
             statsArr = [{state: '0', task: []}, {state: '1', task: []}, {state: '2', task: []}, {state: '3', task: []}];
 
         var regroup = tasks.reduce((arr, item) => {
@@ -451,9 +451,6 @@ router.post('/updatedrag', async function (req, res, next) {
 
         if (['A', 'M'].includes(level)) {
             // 直接改变task的属性
-    
-            // 更新order-group表
-            await OrderGroup.updateOrder(ppm_userid, 'task', tasksArr);
 
             // 更新TaskStateMember
             var tsmBwArr = tasksArr.map(item => {
@@ -497,6 +494,9 @@ router.post('/updatedrag', async function (req, res, next) {
 
             data = await TaskStateMember.insertMany(insertArr);
         }
+
+        // 更新order-group表
+        await OrderGroup.updateOrder(ppm_userid, 'task', tasksArr);
 
         tdata = resFrame(data);
         res.send(tdata);

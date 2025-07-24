@@ -35,7 +35,7 @@ dataSchema.statics.updateOrder = async function(userid, type, targetArr = []) {
         };
     });
 
-    var data = this.insertMany(insertArr);
+    var data = await this.insertMany(insertArr);
 
     return data;
 };

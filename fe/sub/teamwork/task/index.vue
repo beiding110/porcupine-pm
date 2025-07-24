@@ -42,7 +42,8 @@ export default {
             this.taskUpdateLock = true;
 
             this.tableData.forEach(group => {
-                group.task.forEach((item) => {
+                group.task.forEach((item, index) => {
+                    item.order = index;
                     item.state = group.state;
                 });
             });
