@@ -96,7 +96,7 @@ export default {
     data() {
         var today = new Date().getTime();
 
-        var endtime = new Date(today + (1 * 24 * 60 * 60 * 1000)),
+        var endtime = new Date(today),
             starttime = new Date(today - (30 * 24 * 60 * 60 * 1000));
 
         starttime = starttime.pattern('yyyy-MM-dd');

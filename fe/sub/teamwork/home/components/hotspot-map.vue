@@ -84,7 +84,7 @@ export default {
             dateRange: [firstOfYear, lastDayOfYear],
             member: '',
 
-            pickerOptions: pickerOptions,
+            pickerOptions,
         };
     },
     computed: {

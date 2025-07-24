@@ -18,6 +18,7 @@
                         :end-placeholder="timeEndPlaceholder"
                         popper-class="bd__datepiaker"
                         unlink-panels
+                        :picker-options="pickerOptions"
                     ></el-date-picker>
                 </el-form-item>
             </slot>
@@ -56,6 +57,8 @@
 </template>
 
 <script>
+import pickerOptions from '@js/pickerOptions';
+
 export default {
     props: {
         // 双向绑定的搜索表单值
@@ -94,6 +97,8 @@ export default {
     },
     data() {
         return {
+            pickerOptions,
+
             defaultSearch: {
                 title: '',
                 starttime: '',
