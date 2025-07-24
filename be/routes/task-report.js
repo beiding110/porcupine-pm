@@ -64,8 +64,8 @@ router.get('/list', async function (req, res, next) {
 
         if (starttime && endtime) {
             search.reporttime = {
-                $gt: starttime,
-                $lte: endtime,
+                $gte: `${starttime}`,
+                $lte: `${endtime}`,
             };
         }
 

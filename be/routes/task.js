@@ -168,8 +168,8 @@ router.get('/list-file', async function (req, res, next) {
 
         if (starttime && endtime) {
             search.filetime = {
-                $gte: starttime,
-                $lte: endtime,
+                $gte: `${starttime} 00:00:00`,
+                $lte: `${endtime} 23:59:59`,
             };
         }
 
