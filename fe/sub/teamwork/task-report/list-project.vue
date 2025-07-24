@@ -174,6 +174,10 @@ export default {
         },
         reloadHandler() {
             this.queryData();
+
+            this.queryHmProjectData();
+            
+            this.queryHmTaskData();
         },
         queryHmProjectData() {
             this.$get(
