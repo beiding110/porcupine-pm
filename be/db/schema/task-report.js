@@ -157,6 +157,8 @@ dataSchema.statics.buildByProject = function(arr, cb) {
     }, []);
 
     cb && cb(arrRebuild);
+
+    return arrRebuild;
 };
 
 dataSchema.statics.buildByTask = function(arr, cb) {
@@ -266,6 +268,8 @@ dataSchema.statics.buildByTask = function(arr, cb) {
     }, []);
 
     cb && cb(arrRebuild);
+    
+    return arrRebuild;
 };
 
 var Data = mongoose.model('task-report', dataSchema);
