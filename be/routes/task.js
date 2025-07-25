@@ -111,7 +111,7 @@ router.get('/list-state', async function (req, res, next) {
         await TaskStateMember.bindStateFromTSM(ppm_userid, taskData);
         
         // 分组
-        var tasks = await OrderGroup.bindOrder(ppm_userid, 'task', taskData),
+        var tasks = await OrderGroup.bindOrder(ppm_userid, 'task-state', taskData),
             statsArr = [{state: '0', task: []}, {state: '1', task: []}, {state: '2', task: []}, {state: '3', task: []}];
 
         var regroup = tasks.reduce((arr, item) => {
@@ -435,7 +435,7 @@ router.post('/updatedrag', async function (req, res, next) {
     var tdata;
 
     try {
-        const groupArr = req.body,
+        const {data: groupArr, type = 'task'} = req.body,
             {ppm_userid} = req.cookies;
 
         var level = await User.getLevel(ppm_userid),
@@ -496,7 +496,7 @@ router.post('/updatedrag', async function (req, res, next) {
         }
 
         // 更新order-group表
-        await OrderGroup.updateOrder(ppm_userid, 'task', tasksArr);
+        await OrderGroup.updateOrder(ppm_userid, type, tasksArr);
 
         tdata = resFrame(data);
         res.send(tdata);

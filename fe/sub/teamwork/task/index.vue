@@ -48,7 +48,10 @@ export default {
                 });
             });
             
-            this.$post('/task/updatedrag', this.tableData, () => {
+            this.$post('/task/updatedrag', {
+                type: 'task',
+                data: this.tableData,
+            }, () => {
                 this.taskUpdateLock = false;
             }, true);
         },
