@@ -395,7 +395,7 @@ router.get('/hotmapbytask', function (req, res, next) {
         
         const tasks = TaskReport.buildByTask(reportData);
 
-        OrderGroup.bindOrder(ppm_userid, 'task', tasks).then(rebuild => {
+        OrderGroup.bindOrder(ppm_userid, 'task:project-group', tasks).then(rebuild => {
             tdata = resFrame({
                 data: rebuild,
                 range: [rangeStart, rangeEnd],

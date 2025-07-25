@@ -92,13 +92,13 @@ router.get('/list', async function (req, res, next) {
         });
 
         // 排序
-        var listWithOrder = await OrderGroup.bindOrder(ppm_userid, 'task-group', groupWithTaskData);
+        var listWithOrder = await OrderGroup.bindOrder(ppm_userid, 'task-group:project-task', groupWithTaskData);
 
         for (let i = 0; i < listWithOrder.length; i ++) {
             let group = listWithOrder[i];
 
             // 给task绑定排序
-            await OrderGroup.bindOrder(ppm_userid, 'task', group.task);
+            await OrderGroup.bindOrder(ppm_userid, 'task:project-group', group.task);
 
             // 给task绑定状态
             await TaskStateMember.bindStateFromTSM(ppm_userid, group.task);
@@ -191,7 +191,7 @@ router.post('/updateorder', async function (req, res, next) {
         const orderArr = req.body,
             {ppm_userid} = req.cookies;
 
-        var data = await OrderGroup.updateOrder(ppm_userid, 'task-group', orderArr);
+        var data = await OrderGroup.updateOrder(ppm_userid, 'task-group:project-task', orderArr);
 
         tdata = resFrame(data);
         res.send(tdata);

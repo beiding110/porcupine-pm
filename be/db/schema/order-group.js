@@ -8,7 +8,7 @@ let data = {
         ref: 'user'
     },
     linkid: String,
-    type: String,
+    type: String, // task-group:project-task, task:project-group, task:all-state, task:project-state
 
     order: Number,
     groupcode: String,

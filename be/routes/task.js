@@ -96,23 +96,32 @@ router.get('/list-state', async function (req, res, next) {
             search.member = userInPM.id;
         }
 
+        // 获取任务列表，并绑定排序字段
+        var tasks;
+
         if (!procode) {
             // 没有procode，按人查
             taskData = await Task.getList(search);
+
+            // 处理成员的state
+            await TaskStateMember.bindStateFromTSM(ppm_userid, taskData);
+
+            tasks = await OrderGroup.bindOrder(ppm_userid, 'task:all-state', taskData)
         } else {
             // 有procode，按项目查
             taskData = await Task.getList({
                 ...search,
                 procode,
             });
-        }
 
-        // 处理成员的state
-        await TaskStateMember.bindStateFromTSM(ppm_userid, taskData);
+            // 处理成员的state
+            await TaskStateMember.bindStateFromTSM(ppm_userid, taskData);
+
+            tasks = await OrderGroup.bindOrder(ppm_userid, 'task:project-state', taskData)
+        }
         
         // 分组
-        var tasks = await OrderGroup.bindOrder(ppm_userid, 'task-state', taskData),
-            statsArr = [{state: '0', task: []}, {state: '1', task: []}, {state: '2', task: []}, {state: '3', task: []}];
+        var statsArr = [{state: '0', task: []}, {state: '1', task: []}, {state: '2', task: []}, {state: '3', task: []}];
 
         var regroup = tasks.reduce((arr, item) => {
             var state = item.state,
@@ -435,7 +444,7 @@ router.post('/updatedrag', async function (req, res, next) {
     var tdata;
 
     try {
-        const {data: groupArr, type = 'task'} = req.body,
+        const {data: groupArr, type} = req.body,
             {ppm_userid} = req.cookies;
 
         var level = await User.getLevel(ppm_userid),

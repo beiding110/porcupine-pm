@@ -50,7 +50,7 @@ export default {
             });
             
             this.$post('/task/updatedrag', {
-                type: 'task-state',
+                type: 'task:project-state',
                 data: this.tableData,
             }, () => {
                 this.taskUpdateLock = false;

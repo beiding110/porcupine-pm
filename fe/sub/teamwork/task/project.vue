@@ -74,7 +74,10 @@ export default {
                 });
             });
             
-            this.$post('/task/updatedrag', this.tableData, () => {
+            this.$post('/task/updatedrag', {
+                type: 'task:project-group',
+                data: this.tableData,
+            }, () => {
                 this.taskUpdateLock = false;
             }, true);
         },
