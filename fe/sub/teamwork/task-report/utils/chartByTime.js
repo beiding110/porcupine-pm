@@ -45,12 +45,18 @@ export default function(data) {
         series: [
             {
                 data: sData_reportTimes,
-                type: 'line'
+                type: 'line',
+                markLine: {
+                    data: [{ type: 'average', name: 'Avg' }]
+                },
             },
             {
                 data: sData_tasktime,
                 yAxisIndex: 1,
-                type: 'line'
+                type: 'line',
+                markLine: {
+                    data: [{ type: 'average', name: 'Avg' }]
+                },
             },
         ]
     };
