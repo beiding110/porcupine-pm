@@ -9,6 +9,7 @@ const Project = require('../db/schema/project');
 const ProjectMember = require('../db/schema/project-member');
 const User = require('../db/schema/user.js');
 const OrderGroup = require('../db/schema/order-group');
+const Task = require('../db/schema/task');
 const Chain = require('../utils/Chain');
 
 const isLogin = require('../middleware/is-login');
@@ -136,7 +137,7 @@ router.get('/all', async function (req, res, next) {
     }
 });
 
-router.post('/form', function (req, res, next) {
+router.post('/form', async function (req, res, next) {
     const form = req.body,
         {ppm_userid} = req.cookies;
 
@@ -181,16 +182,24 @@ router.post('/form', function (req, res, next) {
             return false;
         }
 
-        TaskReport.create(createData, (err, data) => {
-            if (err) {
-                tdata = resFrame('error', '', err);
-                res.send(tdata);
-                return false;
-            }
+        try {
+            // 插入日报
+            const data = await TaskReport.create(createData);
+
+            // 更新task状态
+            await Task.updateState([
+                {
+                    _id: form.taskcode, 
+                    state: '2',
+                },
+            ]);
 
             tdata = resFrame(data);
-            res.send(tdata);
-        });
+        } catch (e) {
+            tdata = resFrame('error', '', e);
+        }
+
+        res.send(tdata);
     }
 });
 
