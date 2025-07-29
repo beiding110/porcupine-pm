@@ -15,7 +15,19 @@ let data = {
         type: Schema.Types.ObjectId,
         ref: 'project-member',
     },
-    state: String,
+    state: {
+        type: String,
+        enum: [
+            '1', // 待办
+            '2', // 未开始
+            '3', // 进行中
+            '4', // 已完成
+        ],
+    },
+    addtime: {
+        type: Date,
+        default: Date.now(),
+    },
 };
 
 var dataSchema = Schema(data);

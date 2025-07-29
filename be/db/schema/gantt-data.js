@@ -35,6 +35,11 @@ let data = {
     type: {
         type: String,
         default: 'task',
+        enum: [
+            'task', // 任务
+            'project', // 项目
+            'milestone', // 里程碑
+        ],
     },
     
     procode: {

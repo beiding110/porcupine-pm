@@ -14,6 +14,12 @@ let data = {
     type: {
         type: String,
         default: '0',
+        enum: [
+            '0', // finish_to_start
+            '1', // start_to_start
+            '2', // finish_to_finish
+            '3', // start_to_finish
+        ],
     },
     
     procode: {

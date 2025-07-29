@@ -11,7 +11,15 @@ let data = {
     truename: String,
     addtime: String,
     groupid: String,
-    level: String, // mac等级，A/M
+    level: {
+        type: String,
+        default: '',
+        enum: [
+            '', // 普通用户
+            'A', // 管理员
+            'M', // 项目经理
+        ],
+    }, // mac等级
 };
 
 var dataSchema = Schema(data);

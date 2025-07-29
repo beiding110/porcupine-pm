@@ -8,7 +8,16 @@ let data = {
         ref: 'user'
     },
     linkid: String,
-    type: String, // project, task-group:project-task, task:project-group, task:all-state, task:project-state
+    type: {
+        type: String,
+        enum: [
+            'project', // 项目
+            'task-group:project-task', // 项目中任务组
+            'task:project-group', // 项目中任务组的任务
+            'task:all-state', // 所有按状态任务
+            'task:project-state', // 项目中安状态任务
+        ],
+    },
 
     order: Number,
     groupcode: String,

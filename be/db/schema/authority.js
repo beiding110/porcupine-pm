@@ -16,6 +16,10 @@ let data = {
             type: String,
         },
     ],
+    addtime: {
+        type: Date,
+        default: Date.now(),
+    },
 };
 
 var dataSchema = Schema(data);

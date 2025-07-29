@@ -9,8 +9,24 @@ let data = {
     starttime: String,
     endtime: String,
     duration: Number,
-    level: String,
-    state: String,
+    level: {
+        type: String,
+        enum: [
+            '',
+            'l', // 低
+            'm', // 中
+            'h', // 高
+        ],
+    },
+    state: {
+        type: String,
+        enum: [
+            '1', // 待办
+            '2', // 未开始
+            '3', // 进行中
+            '4', // 已完成
+        ],
+    },
     order: Number,
 
     procode: {
