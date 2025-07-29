@@ -296,15 +296,28 @@ router.get('/hotmap', async function (req, res, next) {
 });
 
 router.get('/hotmapbyproject', function (req, res, next) {
-    const {procode} = req.query,
-        {ppm_userid} = req.cookies;
+    const { procode, starttime, endtime, member } = req.query,
+        { ppm_userid } = req.cookies;
 
     var reportData;
 
-    new Chain().link(next => {            
-        TaskReport.find({
+    new Chain().link(next => {   
+        let search = {
             procode: procode,
-        }, null, {
+        };
+        
+        if (starttime && endtime) {
+            search.reporttime = {
+                $gte: `${starttime}`,
+                $lte: `${endtime}`,
+            };
+        }
+
+        if (member) {
+            search.member = member;
+        }
+            
+        TaskReport.find(search, null, {
             sort: {
                 reporttime: 1,
             },
@@ -356,15 +369,28 @@ router.get('/hotmapbyproject', function (req, res, next) {
 });
 
 router.get('/hotmapbytask', function (req, res, next) {
-    const {procode} = req.query,
-        {ppm_userid} = req.cookies;
+    const { procode, starttime, endtime, member } = req.query,
+        { ppm_userid } = req.cookies;
 
     var reportData;
 
-    new Chain().link(next => {            
-        TaskReport.find({
+    new Chain().link(next => {   
+        let search = {
             procode: procode,
-        }, null, {
+        };
+        
+        if (starttime && endtime) {
+            search.reporttime = {
+                $gte: `${starttime}`,
+                $lte: `${endtime}`,
+            };
+        }
+
+        if (member) {
+            search.member = member;
+        }
+
+        TaskReport.find(search, null, {
             sort: {
                 reporttime: 1,
             },

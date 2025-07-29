@@ -9,19 +9,11 @@
         </el-row>
 
         <el-row :gutter="10" class="row">
-            <el-col :span="24">
-                <el-card>
-                    <hotspot-map :data="hmTaskData" :range="hmTaskRange"></hotspot-map>
-                </el-card>
-            </el-col>
-        </el-row>
-
-        <el-row :gutter="10" class="row">
             <el-col :span="12">
                 <el-card>
                     <my-search
                         v-model="pgData"
-                        @search="queryData"
+                        @search="reloadHandler"
                         time-start-placeholder="工作日早至"
                         time-end-placeholder="工作日晚至"
                     >
@@ -106,6 +98,14 @@
                 </el-card>
             </el-col>
         </el-row>
+
+        <el-row :gutter="10" class="row">
+            <el-col :span="24">
+                <el-card>
+                    <hotspot-map :data="hmTaskData" :range="hmTaskRange"></hotspot-map>
+                </el-card>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
@@ -172,17 +172,11 @@ export default {
                 }
             );
         },
-        reloadHandler() {
-            this.queryData();
-
-            this.queryHmProjectData();
-            
-            this.queryHmTaskData();
-        },
         queryHmProjectData() {
             this.$get(
                 '/taskreport/hotmapbyproject',
                 {
+                    ...this.pgData,
                     procode: this.$route.params.procode,
                 },
                 (data) => {
@@ -195,6 +189,7 @@ export default {
             this.$get(
                 '/taskreport/hotmapbytask',
                 {
+                    ...this.pgData,
                     procode: this.$route.params.procode,
                 },
                 (data) => {
@@ -203,13 +198,16 @@ export default {
                 }
             );
         },
+        reloadHandler() {
+            this.queryData();
+
+            this.queryHmProjectData();
+
+            this.queryHmTaskData();
+        },
     },
     created() {
-        this.queryData();
-
-        this.queryHmProjectData();
-
-        this.queryHmTaskData();
+        this.reloadHandler();
     },
 };
 </script>
