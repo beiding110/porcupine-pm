@@ -288,7 +288,7 @@ export default {
         }
 
         & > .body, & > .foot{
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         & > .body{
@@ -297,7 +297,11 @@ export default {
 
             .state{
                 flex: 1;
-                margin-right: 10px;
+                margin-right: 8px;
+            }
+
+            .people {
+
             }
         }
 

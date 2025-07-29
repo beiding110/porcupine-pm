@@ -87,7 +87,7 @@ export default {
 <style lang="scss" scoped>
     @import '@css/var.scss';
 
-    $itemSize: 32px;
+    $itemSize: 30px;
 
     .people-editor{
         display: flex;
