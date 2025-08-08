@@ -107,6 +107,17 @@ export default {
 
             // Create a Timeline
             this.timeline = new Timeline(this.$refs._visualization, items, groups, options);
+
+            this.timeline.on('click', e => {
+                this.$emit('click', e);
+            });
+
+            this.timeline.on('contextmenu', e => {
+                e.event.preventDefault();
+                e.event.stopPropagation();
+
+                this.$emit('contextmenu', e);
+            });
         },
         updateData() {},
     },
