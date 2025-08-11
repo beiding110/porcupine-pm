@@ -8,7 +8,6 @@ const TaskReport = require('../db/schema/task-report');
 const Project = require('../db/schema/project');
 const ProjectMember = require('../db/schema/project-member');
 const User = require('../db/schema/user.js');
-const OrderGroup = require('../db/schema/order-group');
 const Task = require('../db/schema/task');
 const Chain = require('../utils/Chain');
 
@@ -428,15 +427,13 @@ router.get('/hotmapbytask', function (req, res, next) {
         var rangeStart = (reportData[0] || {}).reporttime,
             rangeEnd = (reportData[reportData.length - 1] || {}).reporttime;
         
-        const tasks = TaskReport.buildByTask(reportData);
+        var tasks = TaskReport.buildByTask(reportData);
 
-        OrderGroup.bindOrder(ppm_userid, 'task:project-group', tasks).then(rebuild => {
-            tdata = resFrame({
-                data: rebuild,
-                range: [rangeStart, rangeEnd],
-            });
-            res.send(tdata);
+        tdata = resFrame({
+            data: tasks,
+            range: [rangeStart, rangeEnd],
         });
+        res.send(tdata);
     }).run();
 });
 
