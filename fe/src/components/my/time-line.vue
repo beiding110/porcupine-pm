@@ -38,20 +38,15 @@ export default {
     },
     watch: {
         data: {
-            handler: function () {
+            handler() {
                 this.init();
             },
+            immediate: true,
         },
     },
     methods: {
         init: function () {
             this.loadingController = true;
-
-            try {
-                this.timeline.destroy();
-            } catch (e) {
-                // e
-            }
 
             // DOM element where the Timeline will be attached
             if (this.data && this.data.length === 0) {
@@ -66,6 +61,17 @@ export default {
 
             if (this.groups) {
                 groups = new DataSet(this.groups);
+            }
+
+            if (this.timeline) {
+                this.timeline.setData({
+                    groups,
+                    items,
+                });
+
+                this.loadingController = false;
+
+                return;
             }
 
             // Configuration for the Timeline
@@ -108,21 +114,24 @@ export default {
             // Create a Timeline
             this.timeline = new Timeline(this.$refs._visualization, items, groups, options);
 
-            this.timeline.on('click', e => {
+            this.timeline.on('click', (e) => {
                 this.$emit('click', e);
             });
 
-            this.timeline.on('contextmenu', e => {
+            this.timeline.on('contextmenu', (e) => {
                 e.event.preventDefault();
                 e.event.stopPropagation();
 
                 this.$emit('contextmenu', e);
             });
         },
-        updateData() {},
     },
-    mounted() {
-        this.init();
+    beforeDestroy() {
+        try {
+            this.timeline.destroy();
+        } catch (e) {
+            // e
+        }
     },
 };
 </script>
